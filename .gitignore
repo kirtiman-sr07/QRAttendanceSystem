@@ -1,0 +1,23 @@
+# Ignore entire IntelliJ settings directory
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Maven build files
+target/
+.mvn/
+mvnw
+mvnw.cmd
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# SQLite Local Database files (keeps test data off GitHub)
+*.db
+*.db-journal
+
+# Log files
+*.log
