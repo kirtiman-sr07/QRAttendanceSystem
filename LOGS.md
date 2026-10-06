@@ -11,3 +11,8 @@
 - **Learned**: Primitive types (`int`, `double`, `boolean`), reference types (`String`), and console output formatting.
 - **Implemented**: Created `Main.java` in `com.qrattendance` to model and print student profile attributes.
 - **Status**: Code compiled and executed successfully via IntelliJ runner.
+
+### Day 3 - Control Flow & Loops
+- **Learned**: Conditional logic (`if`, `else if`, `else`) and iteration (`for` loops).
+- **Implemented**: Logic for calculating attendance thresholds and simulating a 5-day QR scan log in `Main.java`.
+- **Status**: Tested and output verified in console.
