@@ -16,3 +16,8 @@
 - **Learned**: Conditional logic (`if`, `else if`, `else`) and iteration (`for` loops).
 - **Implemented**: Logic for calculating attendance thresholds and simulating a 5-day QR scan log in `Main.java`.
 - **Status**: Tested and output verified in console.
+
+### Day 4 - Java Classes & Objects (OOP Basics)
+- **Learned**: Object-Oriented Programming fundamentals (Classes, Objects, Constructors, Encapsulation).
+- **Implemented**: Created `Student.java` inside `com.qrattendance.model` with private fields and methods. Tested instantiation in `Main.java`.
+- **Status**: Code compiled and executed successfully.
