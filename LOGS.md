@@ -21,3 +21,8 @@
 - **Learned**: Object-Oriented Programming fundamentals (Classes, Objects, Constructors, Encapsulation).
 - **Implemented**: Created `Student.java` inside `com.qrattendance.model` with private fields and methods. Tested instantiation in `Main.java`.
 - **Status**: Code compiled and executed successfully.
+
+### Day 5 - Java ArrayList & Iteration (Week 1 Deliverable)
+- **Learned**: Dynamic arrays using `java.util.ArrayList` and enhanced `for-each` loop collection traversal.
+- **Implemented**: Created a dynamic list storing 5 `Student` objects and printed their details in `Main.java`.
+- **Deliverable**: Week 1 core functionality verified and completed.

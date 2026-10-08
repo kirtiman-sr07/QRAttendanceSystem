@@ -1,33 +1,30 @@
 package com.qrattendance;
 
+import com.qrattendance.model.Student;
+import java.util.ArrayList;
+
 public class Main {
     public static void main(String[] args) {
-        String studentName = "Kirtiman";
-        int totalClasses = 20;
-        int attendedClasses = 14;
+        // Create a dynamic list to store Student objects
+        ArrayList<Student> studentList = new ArrayList<>();
 
-        // Calculate attendance percentage
-        double percentage = ((double) attendedClasses / totalClasses) * 100;
+        // Add 5 student records
+        studentList.add(new Student(101, "Kirtiman", "kirtiman@example.com", 15));
+        studentList.add(new Student(102, "Aarav", "aarav@example.com", 18));
+        studentList.add(new Student(103, "Rin", "rin@example.com", 12));
+        studentList.add(new Student(104, "Kenji", "kenji@example.com", 19));
+        studentList.add(new Student(105, "Sora", "sora@example.com", 14));
 
-        System.out.println("==========================================");
-        System.out.println("   ATTENDANCE EVALUATION - " + studentName);
-        System.out.println("==========================================");
-        System.out.println("Classes Attended : " + attendedClasses + "/" + totalClasses);
-        System.out.println("Current Percentage: " + String.format("%.2f", percentage) + "%");
+        System.out.println("=================================================");
+        System.out.println("   QR ATTENDANCE SYSTEM - REGISTERED STUDENTS   ");
+        System.out.println("=================================================");
 
-        // 1. Conditional Logic: Defaulter Check
-        if (percentage >= 75.0) {
-            System.out.println("Status            : ELIGIBLE (Safe)");
-        } else if (percentage >= 60.0) {
-            System.out.println("Status            : WARNING (Close to Defaulter Limit)");
-        } else {
-            System.out.println("Status            : DEFAULTER (Alert Triggered)");
+        // Enhanced for-each loop to print details of all 5 students
+        for (Student student : studentList) {
+            student.displayStudentInfo();
         }
 
-        // 2. Loop Logic: Simulating 5-Day QR Attendance Log
-        System.out.println("\n--- 5-Day QR Scan Simulation ---");
-        for (int day = 1; day <= 5; day++) {
-            System.out.println("Day " + day + ": QR Code scanned successfully at 09:00 AM.");
-        }
+        System.out.println("=================================================");
+        System.out.println("Total Registered Students: " + studentList.size());
     }
 }
