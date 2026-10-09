@@ -26,3 +26,7 @@
 - **Learned**: Dynamic arrays using `java.util.ArrayList` and enhanced `for-each` loop collection traversal.
 - **Implemented**: Created a dynamic list storing 5 `Student` objects and printed their details in `Main.java`.
 - **Deliverable**: Week 1 core functionality verified and completed.
+
+### Day 6 (Week 2, Day 1) - SQLite & JDBC Driver Verification
+- **Verified**: Confirmed `sqlite-jdbc` dependency is active in `pom.xml` and loaded via Maven.
+- **Status**: Project configuration ready for local database creation.
