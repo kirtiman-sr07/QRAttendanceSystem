@@ -34,3 +34,8 @@
 ### Day 7 - SQL Fundamentals
 - **Learned**: Core SQL concepts (Tables, Columns, Rows) and basic commands (`CREATE TABLE`, `INSERT INTO`, `SELECT * FROM`).
 - **Status**: Database query theory completed.
+
+### Day 8 (Week 2, Day 3) - SQLite Database & Table Creation
+- **Learned**: JDBC connection strings (`jdbc:sqlite:...`), `Connection`, `Statement`, and error handling via `try-catch`.
+- **Implemented**: Created `DatabaseManager.java` in `com.qrattendance.db` to automatically generate `attendance.db` and the `students` table on startup.
+- **Status**: Code compiled and executed successfully, `attendance.db` file generated.
