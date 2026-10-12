@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.ResultSet;
 
 public class DatabaseManager {
     // 1. The connection string telling SQLite what file to open/create
@@ -27,6 +28,33 @@ public class DatabaseManager {
 
         } catch (SQLException e) {
             System.out.println("Error initializing database: " + e.getMessage());
+        }
+    }
+
+    // Fetch and print all students from the database
+    public static void getAllStudents() {
+        String sql = "SELECT * FROM students";
+
+        // 1. Open connection and execute query
+        try (Connection conn = DriverManager.getConnection(URL);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            System.out.println("\n--- DATABASE RECORDS: STUDENTS TABLE ---");
+
+            // 2. Loop through the ResultSet row by row
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                int rollNo = rs.getInt("roll_no");
+                String name = rs.getString("name");
+                String email = rs.getString("email");
+
+                // Print each row neatly to the terminal
+                System.out.println("ID: " + id + " | Roll No: " + rollNo + " | Name: " + name + " | Email: " + email);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error querying database: " + e.getMessage());
         }
     }
 }

@@ -39,3 +39,8 @@
 - **Learned**: JDBC connection strings (`jdbc:sqlite:...`), `Connection`, `Statement`, and error handling via `try-catch`.
 - **Implemented**: Created `DatabaseManager.java` in `com.qrattendance.db` to automatically generate `attendance.db` and the `students` table on startup.
 - **Status**: Code compiled and executed successfully, `attendance.db` file generated.
+
+### Day 9 (Week 2, Day 4) - JDBC Querying & ResultSet
+- **Learned**: How to execute `SELECT` queries using `Statement.executeQuery()` and iterate through rows using `ResultSet`.
+- **Implemented**: Added `getAllStudents()` method in `DatabaseManager.java` to read data from `attendance.db`.
+- **Status**: Code compiled and executed successfully.
