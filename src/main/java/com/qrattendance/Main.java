@@ -9,7 +9,10 @@ public class Main {
         // 1. Initialize the database and table
         DatabaseManager.initializeDatabase();
 
-        // 2. Query and display all students from the database
+        // 2. Insert a new student record programmatically
+        DatabaseManager.addStudent(101, "Kirtiman", "kirtiman@example.com");
+
+        // 3. Query and display all students to verify insertion
         DatabaseManager.getAllStudents();
     }
 }

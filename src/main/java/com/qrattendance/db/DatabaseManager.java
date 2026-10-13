@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
+import java.sql.PreparedStatement;
 
 public class DatabaseManager {
     // 1. The connection string telling SQLite what file to open/create
@@ -55,6 +56,28 @@ public class DatabaseManager {
 
         } catch (SQLException e) {
             System.out.println("Error querying database: " + e.getMessage());
+        }
+    }
+
+    // Insert a new student record into the database
+    public static void addStudent(int rollNo, String name, String email) {
+        String sql = "INSERT INTO students (roll_no, name, email) VALUES (?, ?, ?)";
+
+        // 1. Open connection and create a PreparedStatement with question-mark placeholders
+        try (Connection conn = DriverManager.getConnection(URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            // 2. Safely bind the values to the placeholders (1st ?, 2nd ?, 3rd ?)
+            pstmt.setInt(1, rollNo);
+            pstmt.setString(2, name);
+            pstmt.setString(3, email);
+
+            // 3. Execute the insert command
+            pstmt.executeUpdate();
+            System.out.println("Successfully added student: " + name);
+
+        } catch (SQLException e) {
+            System.out.println("Error inserting student: " + e.getMessage());
         }
     }
 }

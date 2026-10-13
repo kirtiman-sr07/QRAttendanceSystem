@@ -44,3 +44,8 @@
 - **Learned**: How to execute `SELECT` queries using `Statement.executeQuery()` and iterate through rows using `ResultSet`.
 - **Implemented**: Added `getAllStudents()` method in `DatabaseManager.java` to read data from `attendance.db`.
 - **Status**: Code compiled and executed successfully.
+
+### Day 10 (Week 2, Day 5) - Programmatic Database Insertion
+- **Learned**: Secure data manipulation using `PreparedStatement` and parameter binding (`pstmt.setInt`, `pstmt.setString`).
+- **Implemented**: Added `addStudent()` method in `DatabaseManager.java` to programmatically insert student records into `attendance.db`.
+- **Status**: End-of-week deliverable successfully met and verified via terminal output.
