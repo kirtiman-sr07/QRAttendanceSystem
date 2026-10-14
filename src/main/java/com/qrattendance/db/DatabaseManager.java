@@ -80,4 +80,23 @@ public class DatabaseManager {
             System.out.println("Error inserting student: " + e.getMessage());
         }
     }
+
+    // Initialize the classes table
+    public static void initializeClassesTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS classes (" +
+                "class_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "subject_name TEXT, " +
+                "teacher_name TEXT, " +
+                "date_time TEXT)";
+
+        try (Connection conn = DriverManager.getConnection(URL);
+             Statement stmt = conn.createStatement()) {
+
+            stmt.execute(sql);
+            System.out.println("Table 'classes' initialized successfully!");
+
+        } catch (SQLException e) {
+            System.out.println("Error creating classes table: " + e.getMessage());
+        }
+    }
 }

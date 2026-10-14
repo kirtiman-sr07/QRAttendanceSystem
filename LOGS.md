@@ -35,17 +35,22 @@
 - **Learned**: Core SQL concepts (Tables, Columns, Rows) and basic commands (`CREATE TABLE`, `INSERT INTO`, `SELECT * FROM`).
 - **Status**: Database query theory completed.
 
-### Day 8 (Week 2, Day 3) - SQLite Database & Table Creation
+### Day 8 - SQLite Database & Table Creation
 - **Learned**: JDBC connection strings (`jdbc:sqlite:...`), `Connection`, `Statement`, and error handling via `try-catch`.
 - **Implemented**: Created `DatabaseManager.java` in `com.qrattendance.db` to automatically generate `attendance.db` and the `students` table on startup.
 - **Status**: Code compiled and executed successfully, `attendance.db` file generated.
 
-### Day 9 (Week 2, Day 4) - JDBC Querying & ResultSet
+### Day 9 - JDBC Querying & ResultSet
 - **Learned**: How to execute `SELECT` queries using `Statement.executeQuery()` and iterate through rows using `ResultSet`.
 - **Implemented**: Added `getAllStudents()` method in `DatabaseManager.java` to read data from `attendance.db`.
 - **Status**: Code compiled and executed successfully.
 
-### Day 10 (Week 2, Day 5) - Programmatic Database Insertion
+### Day 10 - Programmatic Database Insertion
 - **Learned**: Secure data manipulation using `PreparedStatement` and parameter binding (`pstmt.setInt`, `pstmt.setString`).
 - **Implemented**: Added `addStudent()` method in `DatabaseManager.java` to programmatically insert student records into `attendance.db`.
 - **Status**: End-of-week deliverable successfully met and verified via terminal output.
+
+### Day 11 - Multi-Table Database Design (`classes`)
+- **Learned**: Relational database design concepts and structuring secondary tables.
+- **Implemented**: Added `initializeClassesTable()` method in `DatabaseManager.java` to create the `classes` table in `attendance.db`.
+- **Status**: Code compiled and executed successfully.
