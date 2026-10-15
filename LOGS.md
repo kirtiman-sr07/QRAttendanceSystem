@@ -54,3 +54,8 @@
 - **Learned**: Relational database design concepts and structuring secondary tables.
 - **Implemented**: Added `initializeClassesTable()` method in `DatabaseManager.java` to create the `classes` table in `attendance.db`.
 - **Status**: Code compiled and executed successfully.
+
+### Day 12 - Relational Database Bridge (`attendance_logs`)
+- **Learned**: How relational mapping tables connect primary entities (`students` and `classes`) using foreign key references (`student_roll_no` and `class_id`).
+- **Implemented**: Added `initializeAttendanceLogsTable()` method in `DatabaseManager.java` to create the `attendance_logs` table in `attendance.db`.
+- **Status**: Code compiled and executed successfully.

@@ -99,4 +99,24 @@ public class DatabaseManager {
             System.out.println("Error creating classes table: " + e.getMessage());
         }
     }
+
+    // Initialize the attendance_logs table
+    public static void initializeAttendanceLogsTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS attendance_logs (" +
+                "log_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "class_id INTEGER, " +
+                "student_roll_no INTEGER, " +
+                "status TEXT, " +
+                "timestamp TEXT)";
+
+        try (Connection conn = DriverManager.getConnection(URL);
+             Statement stmt = conn.createStatement()) {
+
+            stmt.execute(sql);
+            System.out.println("Table 'attendance_logs' initialized successfully!");
+
+        } catch (SQLException e) {
+            System.out.println("Error creating attendance_logs table: " + e.getMessage());
+        }
+    }
 }
