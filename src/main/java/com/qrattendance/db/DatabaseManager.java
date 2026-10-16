@@ -119,4 +119,31 @@ public class DatabaseManager {
             System.out.println("Error creating attendance_logs table: " + e.getMessage());
         }
     }
+
+    // Update a student's attendance status (e.g., ABSENT to ON-DUTY override)
+    public static void updateAttendanceStatus(int rollNo, int classId, String newStatus) {
+        String sql = "UPDATE attendance_logs SET status = ? WHERE student_roll_no = ? AND class_id = ?";
+
+        // 1. Open connection and create a secure PreparedStatement
+        try (Connection conn = DriverManager.getConnection(URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            // 2. Bind the parameters safely
+            pstmt.setString(1, newStatus);
+            pstmt.setInt(2, rollNo);
+            pstmt.setInt(3, classId);
+
+            // 3. Execute the update
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Successfully updated Roll No " + rollNo + " for Class ID " + classId + " to " + newStatus);
+            } else {
+                System.out.println("No matching attendance record found to update.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error updating attendance status: " + e.getMessage());
+        }
+    }
 }

@@ -59,3 +59,8 @@
 - **Learned**: How relational mapping tables connect primary entities (`students` and `classes`) using foreign key references (`student_roll_no` and `class_id`).
 - **Implemented**: Added `initializeAttendanceLogsTable()` method in `DatabaseManager.java` to create the `attendance_logs` table in `attendance.db`.
 - **Status**: Code compiled and executed successfully.
+
+### Day 13 - SQL UPDATE Queries & HOD Overrides
+- **Learned**: How to modify existing database records using SQL `UPDATE` combined with `WHERE` clauses and `PreparedStatement`.
+- **Implemented**: Added `updateAttendanceStatus()` method in `DatabaseManager.java` to handle status changes (e.g., `ABSENT` to `ON-DUTY`).
+- **Status**: Code compiled and executed successfully.
