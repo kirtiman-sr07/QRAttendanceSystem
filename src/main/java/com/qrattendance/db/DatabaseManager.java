@@ -146,4 +146,48 @@ public class DatabaseManager {
             System.out.println("Error updating attendance status: " + e.getMessage());
         }
     }
+
+    // Calculate attendance percentages and check against the 75% threshold
+    public static void checkAttendancePercentages() {
+        String sql = "SELECT student_roll_no, " +
+                "COUNT(*) AS total_classes, " +
+                "SUM(CASE WHEN status = 'PRESENT' OR status = 'ON-DUTY' THEN 1 ELSE 0 END) AS present_classes " +
+                "FROM attendance_logs GROUP BY student_roll_no";
+
+        try (Connection conn = DriverManager.getConnection(URL);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            System.out.println("\n--- ATTENDANCE PERCENTAGE REPORT ---");
+
+            boolean hasRecords = false;
+            while (rs.next()) {
+                hasRecords = true;
+                int rollNo = rs.getInt("student_roll_no");
+                int totalClasses = rs.getInt("total_classes");
+                int presentClasses = rs.getInt("present_classes");
+
+                // Calculate percentage (cast to double to avoid integer division rounding bugs)
+                double percentage = 0.0;
+                if (totalClasses > 0) {
+                    percentage = ((double) presentClasses / totalClasses) * 100.0;
+                }
+
+                System.out.println("Roll No: " + rollNo + " | Attended: " + presentClasses + "/" + totalClasses +
+                        " | Percentage: " + String.format("%.2f", percentage) + "%");
+
+                // Check 75% university rule
+                if (percentage < 75.0) {
+                    System.out.println("  ⚠️ WARNING: Attendance is below 75% threshold!");
+                }
+            }
+
+            if (!hasRecords) {
+                System.out.println("No attendance logs found in database yet.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error calculating attendance: " + e.getMessage());
+        }
+    }
 }

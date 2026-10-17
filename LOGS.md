@@ -64,3 +64,8 @@
 - **Learned**: How to modify existing database records using SQL `UPDATE` combined with `WHERE` clauses and `PreparedStatement`.
 - **Implemented**: Added `updateAttendanceStatus()` method in `DatabaseManager.java` to handle status changes (e.g., `ABSENT` to `ON-DUTY`).
 - **Status**: Code compiled and executed successfully.
+
+### Day 14 (Week 3, Day 4) - SQL Aggregate Functions & Percentage Logic
+- **Learned**: How to use SQL aggregate functions (`COUNT()`, `SUM()`, `GROUP BY`) and handle division casting in Java.
+- **Implemented**: Added `checkAttendancePercentages()` method in `DatabaseManager.java` to calculate attendance ratios and flag students below 75%.
+- **Status**: Code compiled and executed successfully.
