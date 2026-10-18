@@ -65,7 +65,12 @@
 - **Implemented**: Added `updateAttendanceStatus()` method in `DatabaseManager.java` to handle status changes (e.g., `ABSENT` to `ON-DUTY`).
 - **Status**: Code compiled and executed successfully.
 
-### Day 14 (Week 3, Day 4) - SQL Aggregate Functions & Percentage Logic
+### Day 14  - SQL Aggregate Functions & Percentage Logic
 - **Learned**: How to use SQL aggregate functions (`COUNT()`, `SUM()`, `GROUP BY`) and handle division casting in Java.
 - **Implemented**: Added `checkAttendancePercentages()` method in `DatabaseManager.java` to calculate attendance ratios and flag students below 75%.
 - **Status**: Code compiled and executed successfully.
+
+### Day 15 - End-of-Week Deliverable: Attendance Percentages & Threshold Warnings
+- **Learned**: End-to-end integration of multi-table insertion, aggregate SQL queries, and conditional threshold alerts.
+- **Implemented**: Added `addAttendanceLog()` method and ran a complete test script in `Main.java` processing 10 attendance logs across 3 students.
+- **Status**: Week 3 deliverable fully achieved and verified in terminal output.

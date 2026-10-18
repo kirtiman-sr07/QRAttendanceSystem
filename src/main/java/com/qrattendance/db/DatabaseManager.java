@@ -190,4 +190,23 @@ public class DatabaseManager {
             System.out.println("Error calculating attendance: " + e.getMessage());
         }
     }
+
+    // Insert a dummy attendance record into the logs table
+    public static void addAttendanceLog(int classId, int studentRollNo, String status, String timestamp) {
+        String sql = "INSERT INTO attendance_logs (class_id, student_roll_no, status, timestamp) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = DriverManager.getConnection(URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, classId);
+            pstmt.setInt(2, studentRollNo);
+            pstmt.setString(3, status);
+            pstmt.setString(4, timestamp);
+
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println("Error inserting attendance log: " + e.getMessage());
+        }
+    }
 }
