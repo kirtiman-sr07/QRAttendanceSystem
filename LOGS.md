@@ -74,3 +74,8 @@
 - **Learned**: End-to-end integration of multi-table insertion, aggregate SQL queries, and conditional threshold alerts.
 - **Implemented**: Added `addAttendanceLog()` method and ran a complete test script in `Main.java` processing 10 attendance logs across 3 students.
 - **Status**: Week 3 deliverable fully achieved and verified in terminal output.
+
+### Day 16 - First JavaFX GUI Window
+- **Learned**: Configuring JavaFX dependencies and the Maven `javafx-maven-plugin` to bypass module restrictions.
+- **Implemented**: Created `HelloJavaFX.java` and successfully launched the first desktop application window.
+- **Status**: GUI environment operational.
