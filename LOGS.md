@@ -79,3 +79,8 @@
 - **Learned**: Configuring JavaFX dependencies and the Maven `javafx-maven-plugin` to bypass module restrictions.
 - **Implemented**: Created `HelloJavaFX.java` and successfully launched the first desktop application window.
 - **Status**: GUI environment operational.
+
+### Day 17 - Teacher Login Desktop Window
+- **Learned**: Implementing interactive JavaFX controls (`TextField`, `PasswordField`, `Button`) and event-driven action handlers (`setOnAction`).
+- **Implemented**: Created `TeacherLogin.java` with credential validation logic and styled layout padding.
+- **Status**: Tested and verified via `mvn javafx:run`.

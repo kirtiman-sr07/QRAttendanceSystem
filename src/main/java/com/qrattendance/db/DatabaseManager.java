@@ -12,7 +12,7 @@ public class DatabaseManager {
     private static final String URL = "jdbc:sqlite:attendance.db";
 
     public static void initializeDatabase() {
-        // 2. Open a connection and create a statement statement box
+        // 2. Open a connection and create a statement box
         try (Connection conn = DriverManager.getConnection(URL);
              Statement stmt = conn.createStatement()) {
 
