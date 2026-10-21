@@ -84,3 +84,8 @@
 - **Learned**: Implementing interactive JavaFX controls (`TextField`, `PasswordField`, `Button`) and event-driven action handlers (`setOnAction`).
 - **Implemented**: Created `TeacherLogin.java` with credential validation logic and styled layout padding.
 - **Status**: Tested and verified via `mvn javafx:run`.
+
+### Day 18 - Student Registration Window UI
+- **Learned**: Designing multi-field data input forms using JavaFX text controls and layout containers.
+- **Implemented**: Created `StudentRegistration.java` with text fields for name, roll number, and email, alongside validation logic.
+- **Status**: Tested and verified via `mvn javafx:run`.
