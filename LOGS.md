@@ -89,3 +89,9 @@
 - **Learned**: Designing multi-field data input forms using JavaFX text controls and layout containers.
 - **Implemented**: Created `StudentRegistration.java` with text fields for name, roll number, and email, alongside validation logic.
 - **Status**: Tested and verified via `mvn javafx:run`.
+
+### Day 19 - Connecting JavaFX UI to SQLite Backend
+- **Learned**: Event-driven data binding, parsing text inputs to numeric types safely with `NumberFormatException`, and invoking backend database logic from a UI controller.
+- **Implemented**: Connected the "Save Student" button in `StudentRegistration.java` to invoke `DatabaseManager.addStudent()`.
+- **Status**: Code updated and ready for end-to-end testing.
+- 

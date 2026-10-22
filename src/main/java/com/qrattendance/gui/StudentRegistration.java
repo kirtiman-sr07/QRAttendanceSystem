@@ -1,5 +1,6 @@
 package com.qrattendance.gui;
 
+import com.qrattendance.db.DatabaseManager;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -31,25 +32,42 @@ public class StudentRegistration extends Application {
         Button saveButton = new Button("Save Student");
         Label messageLabel = new Label();
 
-        // 2. Button click event handler (Validation & UI Feedback)
+        // 2. Connect Button to SQLite Database
         saveButton.setOnAction(e -> {
             String name = nameField.getText();
             String rollNoText = rollNoField.getText();
             String email = emailField.getText();
 
-            // Basic empty check validation
+            // Validate empty fields
             if (name.isEmpty() || rollNoText.isEmpty() || email.isEmpty()) {
                 messageLabel.setStyle("-fx-text-fill: red;");
                 messageLabel.setText("Error: All fields must be filled out!");
-            } else {
+                return;
+            }
+
+            try {
+                // Convert roll number string to an integer
+                int rollNo = Integer.parseInt(rollNoText);
+
+                // Call your Week 2/3 DatabaseManager method to insert into SQLite!
+                DatabaseManager.addStudent(rollNo, name, email);
+
                 messageLabel.setStyle("-fx-text-fill: green;");
-                messageLabel.setText("Captured: " + name + " (Roll: " + rollNoText + ")");
-                // Note: Tomorrow on Day 4, we will hook this up to SQLite!
+                messageLabel.setText("Success! Saved " + name + " to database.");
+
+                // Clear input fields for the next student
+                nameField.clear();
+                rollNoField.clear();
+                emailField.clear();
+
+            } catch (NumberFormatException ex) {
+                messageLabel.setStyle("-fx-text-fill: red;");
+                messageLabel.setText("Error: Roll Number must be a valid number!");
             }
         });
 
         // 3. Arrange components vertically in a VBox layout with padding
-        VBox root = new VBox(12); // 12 pixels spacing
+        VBox root = new VBox(12);
         root.setPadding(new Insets(20));
         root.getChildren().addAll(titleLabel, nameField, rollNoField, emailField, saveButton, messageLabel);
 
