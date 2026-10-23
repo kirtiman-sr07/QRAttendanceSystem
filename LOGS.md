@@ -93,5 +93,10 @@
 ### Day 19 - Connecting JavaFX UI to SQLite Backend
 - **Learned**: Event-driven data binding, parsing text inputs to numeric types safely with `NumberFormatException`, and invoking backend database logic from a UI controller.
 - **Implemented**: Connected the "Save Student" button in `StudentRegistration.java` to invoke `DatabaseManager.addStudent()`.
-- **Status**: Code updated and ready for end-to-end testing.
-- 
+- **Status**: Tested and verified successfully via `mvn javafx:run`.
+
+### Day 20 - End-to-End GUI to Database Integration & Audit
+- **Learned**: End-to-end verification of GUI input mapping to SQLite persistent storage.
+- **Implemented**: Connected JavaFX `StudentRegistration` form to `DatabaseManager.addStudent()` and verified records using the terminal SQLite CLI.
+- **Status**: Week 4 Deliverable Complete!
+
