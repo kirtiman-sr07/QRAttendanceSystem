@@ -100,3 +100,12 @@
 - **Implemented**: Connected JavaFX `StudentRegistration` form to `DatabaseManager.addStudent()` and verified records using the terminal SQLite CLI.
 - **Status**: Week 4 Deliverable Complete!
 
+### Week 4 Summary & Milestone Completion: GUI Architecture & Database Persistence
+- **Overview**: Successfully engineered and integrated the desktop user interface layer using JavaFX with persistent data storage via SQLite (`attendance.db`).
+- **Key Technical Accomplishments**:
+    - Configured Maven runtime plugins and JavaFX module dependencies (`javafx-controls`, `javafx-fxml`).
+    - Developed functional desktop views (`TeacherLogin`, `StudentRegistration`) using standard layout containers (`VBox`).
+    - Implemented robust input validation, exception handling (`NumberFormatException`), and early exit guard clauses.
+    - Established secure backend data binding via `DatabaseManager.addStudent()` utilizing `PreparedStatement` to safely persist records.
+    - Conducted end-to-end verification and data integrity checks via the SQLite command-line interface.
+- **Status**: Week 4 successfully concluded and verified.
