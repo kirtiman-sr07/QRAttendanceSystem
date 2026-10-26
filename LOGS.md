@@ -145,3 +145,8 @@
   - Established secure backend data binding via `DatabaseManager.addStudent()` utilizing `PreparedStatement` to safely persist records.
   - Conducted end-to-end verification and data integrity checks via the SQLite command-line interface.
 - **Status**: Week 4 successfully concluded and verified.
+
+### Day 21 - Integrating ZXing Barcode Library
+- **Learned**: The role of the ZXing library in encoding string data into graphical 2D matrix barcodes.
+- **Implemented**: Added Google ZXing `core` and `javase` dependencies to `pom.xml`.
+- **Status**: Library downloaded and synced successfully via Maven.

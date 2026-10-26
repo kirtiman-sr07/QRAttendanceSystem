@@ -102,12 +102,11 @@ public class DatabaseManager {
 
     // Initialize the attendance_logs table
     public static void initializeAttendanceLogsTable() {
-        String sql = "CREATE TABLE IF NOT EXISTS attendance_logs (" +
-                "log_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "class_id INTEGER, " +
-                "student_roll_no INTEGER, " +
-                "status TEXT, " +
-                "timestamp TEXT)";
+        String sql = "CREATE TABLE IF NOT EXISTS students (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "roll_no INTEGER UNIQUE," +
+                "name TEXT," +
+                "email TEXT)";
 
         try (Connection conn = DriverManager.getConnection(URL);
              Statement stmt = conn.createStatement()) {
