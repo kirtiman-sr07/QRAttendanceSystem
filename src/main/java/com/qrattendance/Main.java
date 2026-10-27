@@ -1,17 +1,16 @@
 package com.qrattendance;
 
-import com.qrattendance.db.DatabaseManager;
+import com.qrattendance.security.QRCodeGenerator;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Starting QR Attendance System - Week 3 Day 3...");
+        System.out.println("Testing QR Code Generation Engine...");
 
-        // 1. Ensure all tables exist
-        DatabaseManager.initializeDatabase();
-        DatabaseManager.initializeClassesTable();
-        DatabaseManager.initializeAttendanceLogsTable();
+        // Test string representing a sample class payload
+        String samplePayload = "JAVA_CLASS_101_COFFEE99";
+        String outputPath = "class_qr.png";
 
-        // 2. Test an HOD Override update (e.g., student 101, class 1 -> ON-DUTY)
-        DatabaseManager.updateAttendanceStatus(101, 1, "ON-DUTY");
+        // Generate a 300x300 PNG QR code
+        QRCodeGenerator.generateQRCode(samplePayload, 300, 300, outputPath);
     }
 }

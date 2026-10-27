@@ -150,3 +150,8 @@
 - **Learned**: The role of the ZXing library in encoding string data into graphical 2D matrix barcodes.
 - **Implemented**: Added Google ZXing `core` and `javase` dependencies to `pom.xml`.
 - **Status**: Library downloaded and synced successfully via Maven.
+
+### Day 22 - Core QR Code Generation Function
+- **Learned**: How ZXing's `QRCodeWriter` and `BitMatrix` convert text into a 2D matrix, rendered via `MatrixToImageWriter`.
+- **Implemented**: Created `QRCodeGenerator.java` in `com.qrattendance.security` with a reusable method to output PNG QR images.
+- **Status**: Tested and verified physical PNG generation via test execution.
