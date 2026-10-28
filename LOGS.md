@@ -155,3 +155,8 @@
 - **Learned**: How ZXing's `QRCodeWriter` and `BitMatrix` convert text into a 2D matrix, rendered via `MatrixToImageWriter`.
 - **Implemented**: Created `QRCodeGenerator.java` in `com.qrattendance.security` with a reusable method to output PNG QR images.
 - **Status**: Tested and verified physical PNG generation via test execution.
+
+### Day 23 - Secret Code Word Input UI
+- **Learned**: Designing interactive JavaFX layout containers (`VBox`) equipped with multiple text inputs and event-driven guard clauses.
+- **Implemented**: Created `ClassSessionWindow.java` featuring input fields for subject codes and dynamic secret code words.
+- **Status**: Tested and verified user input capture and validation feedback successfully.
