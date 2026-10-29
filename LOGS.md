@@ -160,3 +160,8 @@
 - **Learned**: Designing interactive JavaFX layout containers (`VBox`) equipped with multiple text inputs and event-driven guard clauses.
 - **Implemented**: Created `ClassSessionWindow.java` featuring input fields for subject codes and dynamic secret code words.
 - **Status**: Tested and verified user input capture and validation feedback successfully.
+
+### Day 24 - Dynamic Anti-Proxy Payload Generation
+- **Learned**: Utilizing Java's `LocalDateTime` and `DateTimeFormatter` to append precise temporal signatures to data payloads for security verification.
+- **Implemented**: Integrated real-time timestamps with subject codes and secret words, passing the concatenated payload directly into `QRCodeGenerator`.
+- **Status**: Tested and verified dynamic PNG generation containing timestamped anti-proxy signatures.

@@ -8,6 +8,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import com.qrattendance.security.QRCodeGenerator;
 
 public class ClassSessionWindow extends Application {
 
@@ -28,7 +31,7 @@ public class ClassSessionWindow extends Application {
         Button startButton = new Button("Start Class & Generate QR");
         Label statusLabel = new Label();
 
-        // 2. Event-Driven Action Handler
+        // 2. Event-Driven Action Handler (Day 4: Dynamic Anti-Proxy Payload)
         startButton.setOnAction(e -> {
             String subject = subjectField.getText().trim();
             String secretWord = secretCodeField.getText().trim();
@@ -40,9 +43,21 @@ public class ClassSessionWindow extends Application {
                 return;
             }
 
-            // Success feedback (Tomorrow we will pass this into our QRCodeGenerator!)
+            // Generate precise current timestamp string
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
+
+            // Combine into single dynamic anti-proxy payload
+            String dynamicPayload = subject + "_" + secretWord + "_" + timestamp;
+
+            // Define output file path
+            String outputPath = "active_class_qr.png";
+
+            // Call ZXing QR code generator engine
+            QRCodeGenerator.generateQRCode(dynamicPayload, 300, 300, outputPath);
+
+            // Provide success feedback
             statusLabel.setStyle("-fx-text-fill: green;");
-            statusLabel.setText("Success! Active Subject: " + subject + " | Code: " + secretWord);
+            statusLabel.setText("QR Generated! Payload: " + dynamicPayload);
         });
 
         // 3. Layout Container Setup
