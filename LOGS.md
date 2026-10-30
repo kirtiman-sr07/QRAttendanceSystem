@@ -165,3 +165,8 @@
 - **Learned**: Utilizing Java's `LocalDateTime` and `DateTimeFormatter` to append precise temporal signatures to data payloads for security verification.
 - **Implemented**: Integrated real-time timestamps with subject codes and secret words, passing the concatenated payload directly into `QRCodeGenerator`.
 - **Status**: Tested and verified dynamic PNG generation containing timestamped anti-proxy signatures.
+
+### Day 25 - Live JavaFX QR Code Rendering
+- **Learned**: Utilizing JavaFX `Image` and `ImageView` components to dynamically load and display local image assets within desktop UI layouts.
+- **Implemented**: Integrated `ImageView` into `ClassSessionWindow.java`, allowing teachers to generate and project live timestamped QR codes instantly with a single click.
+- **Status**: Verified complete end-of-week deliverable via desktop execution and live mobile scanning.

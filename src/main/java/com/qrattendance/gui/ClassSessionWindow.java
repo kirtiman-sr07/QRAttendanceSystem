@@ -6,6 +6,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.time.LocalDateTime;
@@ -31,7 +33,13 @@ public class ClassSessionWindow extends Application {
         Button startButton = new Button("Start Class & Generate QR");
         Label statusLabel = new Label();
 
-        // 2. Event-Driven Action Handler (Day 4: Dynamic Anti-Proxy Payload)
+        // 2. ImageView Setup (The digital frame to display the QR code on screen)
+        ImageView qrImageView = new ImageView();
+        qrImageView.setFitWidth(200);
+        qrImageView.setFitHeight(200);
+        qrImageView.setPreserveRatio(true);
+
+        // 3. Event-Driven Action Handler
         startButton.setOnAction(e -> {
             String subject = subjectField.getText().trim();
             String secretWord = secretCodeField.getText().trim();
@@ -55,17 +63,21 @@ public class ClassSessionWindow extends Application {
             // Call ZXing QR code generator engine
             QRCodeGenerator.generateQRCode(dynamicPayload, 300, 300, outputPath);
 
+            // Load and display the generated QR code live in the ImageView container
+            Image qrImage = new Image("file:" + outputPath);
+            qrImageView.setImage(qrImage);
+
             // Provide success feedback
             statusLabel.setStyle("-fx-text-fill: green;");
-            statusLabel.setText("QR Generated! Payload: " + dynamicPayload);
+            statusLabel.setText("Active QR Displayed Live on Screen!");
         });
 
-        // 3. Layout Container Setup
-        VBox root = new VBox(12, titleLabel, subjectField, secretCodeField, startButton, statusLabel);
+        // 4. Layout Container Setup (Added qrImageView to the VBox stack)
+        VBox root = new VBox(12, titleLabel, subjectField, secretCodeField, startButton, statusLabel, qrImageView);
         root.setPadding(new Insets(20));
 
-        // 4. Scene and Stage Configuration
-        Scene scene = new Scene(root, 380, 260);
+        // 5. Scene and Stage Configuration (Increased height to 500px to fit the QR image)
+        Scene scene = new Scene(root, 380, 500);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
