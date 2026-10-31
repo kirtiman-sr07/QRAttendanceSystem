@@ -139,7 +139,7 @@
 ### Week 4 Summary & Milestone Completion: GUI Architecture & Database Persistence
 - **Overview**: Successfully engineered and integrated the desktop user interface layer using JavaFX with persistent data storage via SQLite (`attendance.db`).
 - **Key Technical Accomplishments**:
-  - Configured Maven runtime plugins and JavaFX module dependencies (`javafx-controls`, `javafx-fxml`).
+- Configured Maven runtime plugins and JavaFX module dependencies (`javafx-controls`, `javafx-fxml`).
   - Developed functional desktop views (`TeacherLogin`, `StudentRegistration`) using standard layout containers (`VBox`).
   - Implemented robust input validation, exception handling (`NumberFormatException`), and early exit guard clauses.
   - Established secure backend data binding via `DatabaseManager.addStudent()` utilizing `PreparedStatement` to safely persist records.
@@ -170,3 +170,13 @@
 - **Learned**: Utilizing JavaFX `Image` and `ImageView` components to dynamically load and display local image assets within desktop UI layouts.
 - **Implemented**: Integrated `ImageView` into `ClassSessionWindow.java`, allowing teachers to generate and project live timestamped QR codes instantly with a single click.
 - **Status**: Verified complete end-of-week deliverable via desktop execution and live mobile scanning.
+
+### Week 5 Summary & Milestone Completion: Dynamic Anti-Proxy QR Generation Engine
+- **Overview**: Successfully engineered and integrated a cryptographic, dynamic QR code generation engine embedded directly within the JavaFX desktop teacher portal, solving the core anti-proxy attendance requirement.
+- **Key Technical Accomplishments**:
+  - Integrated Google ZXing (`core` and `javase`) dependencies via Maven to handle matrix barcode encoding.
+  - Developed the core rendering logic (`QRCodeGenerator.java`) utilizing `QRCodeWriter` and `MatrixToImageWriter` to convert raw text strings into high-resolution PNG QR images.
+  - Developed the teacher desktop interface (`ClassSessionWindow.java`) featuring dedicated input fields for subject codes and dynamic secret words (`coffee99`) with validation guard clauses.
+  - Engineered a secure anti-proxy payload format combining `Subject + SecretWord + Timestamp` using Java's `LocalDateTime` and `DateTimeFormatter`.
+  - Integrated JavaFX `Image` and `ImageView` components to instantly load and project the live, timestamped QR code onto the desktop screen for mobile scanning.
+- **Status**: Week 5 successfully concluded, tested, and verified via end-to-end execution.
