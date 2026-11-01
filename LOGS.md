@@ -180,3 +180,8 @@
   - Engineered a secure anti-proxy payload format combining `Subject + SecretWord + Timestamp` using Java's `LocalDateTime` and `DateTimeFormatter`.
   - Integrated JavaFX `Image` and `ImageView` components to instantly load and project the live, timestamped QR code onto the desktop screen for mobile scanning.
 - **Status**: Week 5 successfully concluded, tested, and verified via end-to-end execution.
+
+### Day 26 - JavaFX Timeline & Thread Safety
+- **Learned**: The architectural differences between backend background schedulers (`ScheduledExecutorService`) and UI-bound timers (`Timeline`), focusing on JavaFX Application Thread safety.
+- **Implemented**: Researched and structured `Timeline` and `KeyFrame` syntax for 15-second repeating intervals.
+- **Status**: Concept understood, prepared for integration into `ClassSessionWindow.java`.
