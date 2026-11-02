@@ -185,3 +185,8 @@
 - **Learned**: The architectural differences between backend background schedulers (`ScheduledExecutorService`) and UI-bound timers (`Timeline`), focusing on JavaFX Application Thread safety.
 - **Implemented**: Researched and structured `Timeline` and `KeyFrame` syntax for 15-second repeating intervals.
 - **Status**: Concept understood, prepared for integration into `ClassSessionWindow.java`.
+
+### Day 27 - Automated 15-Second QR Refresh Loop
+- **Learned**: Encapsulating UI refresh logic into reusable `Runnable` blocks and binding them to repeating JavaFX `Timeline` intervals.
+- **Implemented**: Upgraded `ClassSessionWindow.java` to automatically re-generate payloads, update physical PNGs, and refresh `ImageView` contents every 15 seconds upon session launch.
+- **Status**: Tested and verified live automated rotation successfully.
