@@ -190,3 +190,8 @@
 - **Learned**: Encapsulating UI refresh logic into reusable `Runnable` blocks and binding them to repeating JavaFX `Timeline` intervals.
 - **Implemented**: Upgraded `ClassSessionWindow.java` to automatically re-generate payloads, update physical PNGs, and refresh `ImageView` contents every 15 seconds upon session launch.
 - **Status**: Tested and verified live automated rotation successfully.
+
+### Day 28 - Flicker-Free Stream-Based Image Loading
+- **Learned**: Overcoming JavaFX aggressive URL string caching ("Ghost Cache") by utilizing `FileInputStream` data streams for dynamic asset reloading.
+- **Implemented**: Upgraded `ClassSessionWindow.java` refresh loop to stream PNG file updates directly into memory, ensuring smooth, flicker-free rendering.
+- **Status**: Tested and verified seamless periodic UI updates without memory caching bottlenecks.
