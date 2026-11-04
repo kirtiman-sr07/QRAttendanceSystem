@@ -22,6 +22,7 @@ import com.qrattendance.security.QRCodeGenerator;
 public class ClassSessionWindow extends Application {
 
     private Timeline qrTimeline;
+    private int timeLeft = 15; // Tracks countdown seconds
 
     @Override
     public void start(Stage primaryStage) {
@@ -40,13 +41,17 @@ public class ClassSessionWindow extends Application {
         Button startButton = new Button("Start Class & Auto-Refresh QR");
         Label statusLabel = new Label();
 
+        // Visual Countdown Label Setup
+        Label countdownLabel = new Label("Next Refresh In: --s");
+        countdownLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #e67e22;");
+
         // 2. ImageView Setup
         ImageView qrImageView = new ImageView();
         qrImageView.setFitWidth(200);
         qrImageView.setFitHeight(200);
         qrImageView.setPreserveRatio(true);
 
-        // 3. Event-Driven Action Handler with Stream-Based Refresh
+        // 3. Event-Driven Action Handler with Unified Ticker
         startButton.setOnAction(e -> {
             String subject = subjectField.getText().trim();
             String secretWord = secretCodeField.getText().trim();
@@ -61,7 +66,8 @@ public class ClassSessionWindow extends Application {
                 qrTimeline.stop();
             }
 
-            Runnable refreshAction = () -> {
+            // Helper method logic encapsulated for immediate run & periodic refresh
+            Runnable generateAndDisplayQR = () -> {
                 String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
                 String dynamicPayload = subject + "_" + secretWord + "_" + timestamp;
                 String outputPath = "active_class_qr.png";
@@ -69,7 +75,7 @@ public class ClassSessionWindow extends Application {
                 // Generate new QR PNG on disk
                 QRCodeGenerator.generateQRCode(dynamicPayload, 300, 300, outputPath);
 
-                // Load via FileInputStream to bypass JavaFX URL cache and prevent flickering
+                // Load via FileInputStream to bypass cache and prevent flickering
                 try (FileInputStream fileInputStream = new FileInputStream(outputPath)) {
                     Image qrImage = new Image(fileInputStream);
                     qrImageView.setImage(qrImage);
@@ -82,17 +88,34 @@ public class ClassSessionWindow extends Application {
                 }
             };
 
-            // Run immediately, then every 15 seconds
-            refreshAction.run();
-            qrTimeline = new Timeline(new KeyFrame(Duration.seconds(15), event -> refreshAction.run()));
+            // Execute immediately on click
+            timeLeft = 15;
+            generateAndDisplayQR.run();
+            countdownLabel.setText("Next Refresh In: " + timeLeft + "s");
+
+            // Setup a 1-second ticking Timeline that handles both countdown and QR rotation
+            qrTimeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+                timeLeft--;
+
+                if (timeLeft <= 0) {
+                    // Time's up! Regenerate QR code and reset countdown
+                    generateAndDisplayQR.run();
+                    timeLeft = 15;
+                }
+
+                countdownLabel.setText("Next Refresh In: " + timeLeft + "s");
+            }));
+
             qrTimeline.setCycleCount(Timeline.INDEFINITE);
             qrTimeline.play();
         });
 
-        VBox root = new VBox(12, titleLabel, subjectField, secretCodeField, startButton, statusLabel, qrImageView);
+        // 4. Layout Container Setup (Added countdownLabel right above the QR image)
+        VBox root = new VBox(12, titleLabel, subjectField, secretCodeField, startButton, statusLabel, countdownLabel, qrImageView);
         root.setPadding(new Insets(20));
 
-        Scene scene = new Scene(root, 380, 500);
+        // 5. Scene and Stage Configuration
+        Scene scene = new Scene(root, 380, 530);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

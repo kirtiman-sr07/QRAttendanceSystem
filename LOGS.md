@@ -195,3 +195,9 @@
 - **Learned**: Overcoming JavaFX aggressive URL string caching ("Ghost Cache") by utilizing `FileInputStream` data streams for dynamic asset reloading.
 - **Implemented**: Upgraded `ClassSessionWindow.java` refresh loop to stream PNG file updates directly into memory, ensuring smooth, flicker-free rendering.
 - **Status**: Tested and verified seamless periodic UI updates without memory caching bottlenecks.
+
+### Day 29 - Visual 1-Second Countdown Timer UI
+- **Learned**: Synchronizing visual text updates with backend state cycles using a unified 1-second JavaFX `Timeline` decrement loop.
+- **Implemented**: Added `countdownLabel` to `ClassSessionWindow.java` tracking real-time expiration ticks down to zero prior to automated QR refreshes.
+- **Status**: Tested and verified synchronized visual countdown alongside seamless image rotation.
+
