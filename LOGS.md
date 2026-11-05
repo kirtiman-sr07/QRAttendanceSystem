@@ -201,3 +201,19 @@
 - **Implemented**: Added `countdownLabel` to `ClassSessionWindow.java` tracking real-time expiration ticks down to zero prior to automated QR refreshes.
 - **Status**: Tested and verified synchronized visual countdown alongside seamless image rotation.
 
+### Day 30 (Week 6, Day 5) - Production Memory Stability & Stress Testing
+- **Learned**: Monitoring JVM heap memory behavior, Garbage Collection "sawtooth" cycles, and preventing resource leaks during continuous UI asset reloading.
+- **Implemented**: Conducted a continuous 5-minute stress test of the automated 15-second refresh loop and countdown timer under live runtime conditions.
+- **Status**: Verified complete memory stability, zero resource leaks, and seamless multi-cycle UI performance.
+
+
+### Week 6 Summary & Milestone Completion: 15-Second Dynamic QR Auto-Refresh
+- **Overview**: Successfully engineered and integrated an automated, time-based cryptographic rotation engine into the JavaFX desktop teacher portal, eliminating static screenshot exploitation.
+- **Key Technical Accomplishments**:
+  - Implemented event-driven UI scheduling using JavaFX `Timeline` and `KeyFrame` execution loops.
+  - Upgraded the background engine to automatically recalculate timestamps, regenerate PNG matrices, and refresh payloads every 15 seconds.
+  - Resolved aggressive JavaFX URL string caching ("Ghost Cache") by engineering stream-based `FileInputStream` asset loading for flicker-free rendering.
+  - Synchronized a real-time, visual 1-second decrementing `countdownLabel` with the background rotation cycle to provide transparent classroom feedback.
+  - Conducted rigorous 5-minute memory stress testing, confirming stable JVM heap consumption and clean Garbage Collection performance.
+- **Status**: Week 6 successfully concluded, tested, and verified via end-to-end execution.
+
