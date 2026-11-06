@@ -208,7 +208,7 @@
 
 
 ### Week 6 Summary & Milestone Completion: 15-Second Dynamic QR Auto-Refresh
-- **Overview**: Successfully engineered and integrated an automated, time-based cryptographic rotation engine into the JavaFX desktop teacher portal, eliminating static screenshot exploitation.
+- **Overview**: Successfully engineered and integrated an automated, time-based cryptographic rotation engine into the JavaFX desktop teacher portal, eliminating static screenshot exploitation and ensuring robust anti-proxy concurrency.
 - **Key Technical Accomplishments**:
   - Implemented event-driven UI scheduling using JavaFX `Timeline` and `KeyFrame` execution loops.
   - Upgraded the background engine to automatically recalculate timestamps, regenerate PNG matrices, and refresh payloads every 15 seconds.
@@ -216,4 +216,3 @@
   - Synchronized a real-time, visual 1-second decrementing `countdownLabel` with the background rotation cycle to provide transparent classroom feedback.
   - Conducted rigorous 5-minute memory stress testing, confirming stable JVM heap consumption and clean Garbage Collection performance.
 - **Status**: Week 6 successfully concluded, tested, and verified via end-to-end execution.
-
