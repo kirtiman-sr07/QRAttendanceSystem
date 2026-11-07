@@ -216,3 +216,8 @@
   - Synchronized a real-time, visual 1-second decrementing `countdownLabel` with the background rotation cycle to provide transparent classroom feedback.
   - Conducted rigorous 5-minute memory stress testing, confirming stable JVM heap consumption and clean Garbage Collection performance.
 - **Status**: Week 6 successfully concluded, tested, and verified via end-to-end execution.
+
+### Day 31 - Integrating Javalin Web Server Framework
+- **Learned**: The architecture of embedded lightweight HTTP servers (Javalin/Jetty) and how desktop applications can host local micro-services for network communication.
+- **Implemented**: Added Javalin (`io.javalin`) and SLF4J logger dependencies to `pom.xml` to prepare for local Wi-Fi mobile request handling.
+- **Status**: Library dependencies successfully downloaded and synced via Maven.
