@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import com.qrattendance.security.QRCodeGenerator;
+import com.qrattendance.server.WebServer;
 
 public class ClassSessionWindow extends Application {
 
@@ -27,6 +28,9 @@ public class ClassSessionWindow extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Teacher Session Portal - QRAttendance");
+
+        // Boot up the embedded background web server for mobile scans on port 8080
+        WebServer.startServer();
 
         // 1. UI Controls Setup
         Label titleLabel = new Label("Launch Live Class Session");
@@ -125,6 +129,8 @@ public class ClassSessionWindow extends Application {
         if (qrTimeline != null) {
             qrTimeline.stop();
         }
+        // Shut down the embedded web server cleanly on application exit
+        WebServer.stopServer();
     }
 
     public static void main(String[] args) {

@@ -221,3 +221,9 @@
 - **Learned**: The architecture of embedded lightweight HTTP servers (Javalin/Jetty) and how desktop applications can host local micro-services for network communication.
 - **Implemented**: Added Javalin (`io.javalin`) and SLF4J logger dependencies to `pom.xml` to prepare for local Wi-Fi mobile request handling.
 - **Status**: Library dependencies successfully downloaded and synced via Maven.
+
+### Day 32 - Booting Embedded Javalin HTTP Server
+- **Learned**: Managing multi-threaded application lifecycles where a background embedded server (`Javalin`) runs concurrently with a JavaFX desktop user interface.
+- **Implemented**: Created `WebServer.java` to handle server boot/shutdown routines on port 8080 and integrated startup/stop hooks into `ClassSessionWindow.java`.
+- **Status**: Tested and verified local HTTP endpoint response via `http://localhost:8080/scan`.
+
