@@ -231,3 +231,8 @@
 - **Learned**: Constructing dynamic HTML string responses and utilizing mobile viewport meta tags to render responsive web pages from an embedded Java server.
 - **Implemented**: Upgraded the `/scan` GET route in `WebServer.java` to serve a styled, card-based mobile interface using Javalin's `ctx.html()` method.
 - **Status**: Tested and verified rendered HTML layout successfully in browser.
+
+### Day 34 - Building Mobile Check-In Form and POST Route Handler
+- **Learned**: Handling HTTP POST form submissions (`ctx.formParam()`) in Javalin and structuring mobile-responsive input forms.
+- **Implemented**: Added input fields for `rollNumber` and `qrToken` inside the HTML UI on `/scan` and created a companion `POST /submit-attendance` endpoint in `WebServer.java`.
+- **Status**: Tested and verified end-to-end form rendering and request parameter extraction in browser.
