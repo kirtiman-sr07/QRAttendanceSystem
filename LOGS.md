@@ -236,3 +236,9 @@
 - **Learned**: Handling HTTP POST form submissions (`ctx.formParam()`) in Javalin and structuring mobile-responsive input forms.
 - **Implemented**: Added input fields for `rollNumber` and `qrToken` inside the HTML UI on `/scan` and created a companion `POST /submit-attendance` endpoint in `WebServer.java`.
 - **Status**: Tested and verified end-to-end form rendering and request parameter extraction in browser.
+
+### Day 35 - Local Wi-Fi Mobile-to-Desktop Integration & Testing
+- **Learned**: Local network routing, binding embedded servers to host network interfaces, and cross-device HTTP packet transmission over Wi-Fi subnets.
+- **Implemented**: Connected smartphone browser to laptop embedded Javalin server via local IP address, successfully transmitting form data (`POST`) into the running Java desktop runtime.
+- **Status**: Tested and verified end-to-end mobile check-in data flow successfully.
+

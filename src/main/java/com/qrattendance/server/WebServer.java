@@ -61,6 +61,9 @@ public class WebServer {
             String rollNumber = ctx.formParam("rollNumber");
             String qrToken = ctx.formParam("qrToken");
 
+            // Print incoming student check-in data to the Java console log
+            System.out.println("[ATTENDANCE RECEIVED] Roll Number: " + rollNumber + " | Token: " + qrToken);
+
             String responsePage = "<!DOCTYPE html>" +
                     "<html>" +
                     "<head>" +
