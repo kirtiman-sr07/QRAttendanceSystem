@@ -242,3 +242,12 @@
 - **Implemented**: Connected smartphone browser to laptop embedded Javalin server via local IP address, successfully transmitting form data (`POST`) into the running Java desktop runtime.
 - **Status**: Tested and verified end-to-end mobile check-in data flow successfully.
 
+### Week 7 Summary & Milestone Completion: Embedded Lightweight Web Server for Mobile Scans
+- **Overview**: Successfully embedded a high-performance lightweight HTTP server (`Javalin`) directly inside the JavaFX desktop application lifecycle, enabling real-time student mobile browser communication over local Wi-Fi.
+- **Key Technical Accomplishments**:
+  - Integrated Javalin and SLF4J dependencies via Maven for embedded micro-service hosting.
+  - Engineered `WebServer.java` with thread-safe start and stop routines synchronized with desktop application window lifecycles.
+  - Served responsive, mobile-optimized HTML check-in interfaces complete with viewport scaling and structured CSS card layouts.
+  - Built robust `GET /scan` rendering and `POST /submit-attendance` parameter extraction handlers.
+  - Performed rigorous local Wi-Fi network testing, validating seamless mobile-to-desktop data payload delivery.
+- **Status**: Week 7 successfully concluded, tested, and verified via end-to-end execution.
