@@ -1,9 +1,26 @@
 package com.qrattendance.server;
 
 import io.javalin.Javalin;
+import com.qrattendance.security.TokenValidator;
 
 public class WebServer {
     private static Javalin app;
+    private static String activeSubject = "";
+    private static String activeSecretWord = "";
+    private static boolean sessionActive = false;
+
+    // Called by JavaFX controller when teacher starts class
+    public static void setSessionCredentials(String subject, String secretWord) {
+        activeSubject = subject;
+        activeSecretWord = secretWord;
+        sessionActive = true;
+    }
+
+    public static void endSession() {
+        sessionActive = false;
+        activeSubject = "";
+        activeSecretWord = "";
+    }
 
     // Start the embedded Javalin server on port 8080
     public static void startServer() {
@@ -61,8 +78,13 @@ public class WebServer {
             String rollNumber = ctx.formParam("rollNumber");
             String qrToken = ctx.formParam("qrToken");
 
-            // Print incoming student check-in data to the Java console log
-            System.out.println("[ATTENDANCE RECEIVED] Roll Number: " + rollNumber + " | Token: " + qrToken);
+            boolean isValid = sessionActive && TokenValidator.isValidToken(qrToken, activeSubject, activeSecretWord);
+
+            System.out.println("[ATTENDANCE ATTEMPT] Roll: " + rollNumber + " | Valid: " + isValid);
+
+            String heading = isValid ? "Attendance Successful!" : "Check-In Failed";
+            String textColor = isValid ? "#27ae60" : "#c0392b";
+            String message = isValid ? "Successfully verified and recorded." : "Token expired, invalid, or class session inactive.";
 
             String responsePage = "<!DOCTYPE html>" +
                     "<html>" +
@@ -72,16 +94,16 @@ public class WebServer {
                     "<style>" +
                     "body { font-family: Arial, sans-serif; background-color: #f4f6f8; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; height: 100vh; box-sizing: border-box; }" +
                     ".card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }" +
-                    "h2 { color: #27ae60; margin-bottom: 10px; }" +
+                    "h2 { color: " + textColor + "; margin-bottom: 10px; }" +
                     "p { color: #2c3e50; font-size: 14px; margin: 8px 0; }" +
                     ".highlight { background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #e9ecef; font-family: monospace; font-size: 13px; word-break: break-all; margin-top: 15px; }" +
                     "</style>" +
                     "</head>" +
                     "<body>" +
                     "<div class=\"card\">" +
-                    "<h2>Attendance Received!</h2>" +
+                    "<h2>" + heading + "</h2>" +
                     "<p>Roll Number: <strong>" + rollNumber + "</strong></p>" +
-                    "<p>Successfully transmitted to Java Backend.</p>" +
+                    "<p>" + message + "</p>" +
                     "<div class=\"highlight\">Token: " + qrToken + "</div>" +
                     "</div>" +
                     "</body>" +

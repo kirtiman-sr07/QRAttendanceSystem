@@ -66,6 +66,9 @@ public class ClassSessionWindow extends Application {
                 return;
             }
 
+            // Register active session credentials with embedded web server for validation
+            WebServer.setSessionCredentials(subject, secretWord);
+
             if (qrTimeline != null) {
                 qrTimeline.stop();
             }

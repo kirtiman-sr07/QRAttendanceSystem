@@ -251,3 +251,9 @@
   - Built robust `GET /scan` rendering and `POST /submit-attendance` parameter extraction handlers.
   - Performed rigorous local Wi-Fi network testing, validating seamless mobile-to-desktop data payload delivery.
 - **Status**: Week 7 successfully concluded, tested, and verified via end-to-end execution.
+
+## Month 3: Web Server, Mobile Check-in & Attendance Logic
+
+### Week 8: Token Validation & Thread Safety (Concurrent Scans)
+- **Day 36 (Week 8, Day 1)**: Created `TokenValidator.java` to verify cryptographic time-hashes against a 30-second temporal tolerance window and updated `WebServer.java` with active session credential bindings.
+- **Status**: Tested and verified token parsing, expiration checking, and rejection logic.
