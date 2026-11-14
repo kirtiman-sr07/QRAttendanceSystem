@@ -257,3 +257,8 @@
 ### Week 8: Token Validation & Thread Safety (Concurrent Scans)
 - **Day 36 (Week 8, Day 1)**: Created `TokenValidator.java` to verify cryptographic time-hashes against a 30-second temporal tolerance window and updated `WebServer.java` with active session credential bindings.
 - **Status**: Tested and verified token parsing, expiration checking, and rejection logic.
+
+### Day 37 - (Week 8, Day 2): Enforcing 30-Second Token Expiration Window
+- **Learned**: Calculating temporal delta using `ChronoUnit.SECONDS.between()` to invalidate outdated cryptographic payloads.
+- **Implemented**: Updated `TokenValidator.java` to strictly reject QR tokens older than 30 seconds, preventing stale screenshot cheating.
+- **Status**: Tested and verified expiration logic via terminal logs.
