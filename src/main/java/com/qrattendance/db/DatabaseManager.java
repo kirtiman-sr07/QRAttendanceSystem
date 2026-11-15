@@ -8,27 +8,71 @@ import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 
 public class DatabaseManager {
-    // 1. The connection string telling SQLite what file to open/create
     private static final String URL = "jdbc:sqlite:attendance.db";
 
     public static void initializeDatabase() {
-        // 2. Open a connection and create a statement box
         try (Connection conn = DriverManager.getConnection(URL);
              Statement stmt = conn.createStatement()) {
 
-            // 3. The SQL command we learned yesterday
-            String sql = "CREATE TABLE IF NOT EXISTS students (" +
+            // 1. Updated students table with TEXT roll_no and password_hash for Phase 2 authentication
+            String studentsSql = "CREATE TABLE IF NOT EXISTS students (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    "roll_no INTEGER, " +
-                    "name TEXT, " +
-                    "email TEXT)";
+                    "roll_no TEXT UNIQUE NOT NULL, " +
+                    "name TEXT NOT NULL, " +
+                    "email TEXT NOT NULL, " +
+                    "password_hash TEXT NOT NULL" +
+                    ");";
+            stmt.execute(studentsSql);
 
-            // 4. Execute the SQL command on the database
-            stmt.execute(sql);
-            System.out.println("Database 'attendance.db' and 'students' table initialized successfully!");
+            // Seed a default test student account for login testing (Roll: BCA2026001, Pass: password123)
+            String seedStudent = "INSERT OR IGNORE INTO students (roll_no, name, email, password_hash) " +
+                    "VALUES ('BCA2026001', 'Kirtiman Student', 'kirtiman@student.com', 'password123');";
+            stmt.execute(seedStudent);
+
+            // 2. Initialize Classes Table
+            String classesSql = "CREATE TABLE IF NOT EXISTS classes (" +
+                    "class_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "subject_name TEXT, " +
+                    "teacher_name TEXT, " +
+                    "date_time TEXT" +
+                    ");";
+            stmt.execute(classesSql);
+
+            // 3. Initialize Attendance Logs Table (Fixed bug from previous code)
+            String logsSql = "CREATE TABLE IF NOT EXISTS attendance_logs (" +
+                    "log_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "class_id INTEGER, " +
+                    "student_roll_no TEXT, " +
+                    "status TEXT, " +
+                    "timestamp TEXT" +
+                    ");";
+            stmt.execute(logsSql);
+
+            System.out.println("[DB] Database and all core tables initialized successfully!");
 
         } catch (SQLException e) {
-            System.out.println("Error initializing database: " + e.getMessage());
+            System.out.println("[DB ERROR] Error initializing database: " + e.getMessage());
+        }
+    }
+
+    // Authenticate student login credentials for Phase 2
+    public static boolean authenticateStudent(String rollNo, String password) {
+        String sql = "SELECT * FROM students WHERE roll_no = ? AND password_hash = ?";
+
+        try (Connection conn = DriverManager.getConnection(URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, rollNo.trim());
+            pstmt.setString(2, password.trim());
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                // If a matching row is found, login is valid!
+                return rs.next();
+            }
+
+        } catch (SQLException e) {
+            System.out.println("[DB ERROR] Authentication query failed: " + e.getMessage());
+            return false;
         }
     }
 
@@ -36,21 +80,18 @@ public class DatabaseManager {
     public static void getAllStudents() {
         String sql = "SELECT * FROM students";
 
-        // 1. Open connection and execute query
         try (Connection conn = DriverManager.getConnection(URL);
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
             System.out.println("\n--- DATABASE RECORDS: STUDENTS TABLE ---");
 
-            // 2. Loop through the ResultSet row by row
             while (rs.next()) {
                 int id = rs.getInt("id");
-                int rollNo = rs.getInt("roll_no");
+                String rollNo = rs.getString("roll_no");
                 String name = rs.getString("name");
                 String email = rs.getString("email");
 
-                // Print each row neatly to the terminal
                 System.out.println("ID: " + id + " | Roll No: " + rollNo + " | Name: " + name + " | Email: " + email);
             }
 
@@ -60,19 +101,17 @@ public class DatabaseManager {
     }
 
     // Insert a new student record into the database
-    public static void addStudent(int rollNo, String name, String email) {
-        String sql = "INSERT INTO students (roll_no, name, email) VALUES (?, ?, ?)";
+    public static void addStudent(String rollNo, String name, String email, String passwordHash) {
+        String sql = "INSERT INTO students (roll_no, name, email, password_hash) VALUES (?, ?, ?, ?)";
 
-        // 1. Open connection and create a PreparedStatement with question-mark placeholders
         try (Connection conn = DriverManager.getConnection(URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            // 2. Safely bind the values to the placeholders (1st ?, 2nd ?, 3rd ?)
-            pstmt.setInt(1, rollNo);
+            pstmt.setString(1, rollNo);
             pstmt.setString(2, name);
             pstmt.setString(3, email);
+            pstmt.setString(4, passwordHash);
 
-            // 3. Execute the insert command
             pstmt.executeUpdate();
             System.out.println("Successfully added student: " + name);
 
@@ -81,58 +120,17 @@ public class DatabaseManager {
         }
     }
 
-    // Initialize the classes table
-    public static void initializeClassesTable() {
-        String sql = "CREATE TABLE IF NOT EXISTS classes (" +
-                "class_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "subject_name TEXT, " +
-                "teacher_name TEXT, " +
-                "date_time TEXT)";
-
-        try (Connection conn = DriverManager.getConnection(URL);
-             Statement stmt = conn.createStatement()) {
-
-            stmt.execute(sql);
-            System.out.println("Table 'classes' initialized successfully!");
-
-        } catch (SQLException e) {
-            System.out.println("Error creating classes table: " + e.getMessage());
-        }
-    }
-
-    // Initialize the attendance_logs table
-    public static void initializeAttendanceLogsTable() {
-        String sql = "CREATE TABLE IF NOT EXISTS students (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "roll_no INTEGER UNIQUE," +
-                "name TEXT," +
-                "email TEXT)";
-
-        try (Connection conn = DriverManager.getConnection(URL);
-             Statement stmt = conn.createStatement()) {
-
-            stmt.execute(sql);
-            System.out.println("Table 'attendance_logs' initialized successfully!");
-
-        } catch (SQLException e) {
-            System.out.println("Error creating attendance_logs table: " + e.getMessage());
-        }
-    }
-
     // Update a student's attendance status (e.g., ABSENT to ON-DUTY override)
-    public static void updateAttendanceStatus(int rollNo, int classId, String newStatus) {
+    public static void updateAttendanceStatus(String rollNo, int classId, String newStatus) {
         String sql = "UPDATE attendance_logs SET status = ? WHERE student_roll_no = ? AND class_id = ?";
 
-        // 1. Open connection and create a secure PreparedStatement
         try (Connection conn = DriverManager.getConnection(URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            // 2. Bind the parameters safely
             pstmt.setString(1, newStatus);
-            pstmt.setInt(2, rollNo);
+            pstmt.setString(2, rollNo);
             pstmt.setInt(3, classId);
 
-            // 3. Execute the update
             int rowsAffected = pstmt.executeUpdate();
 
             if (rowsAffected > 0) {
@@ -162,11 +160,10 @@ public class DatabaseManager {
             boolean hasRecords = false;
             while (rs.next()) {
                 hasRecords = true;
-                int rollNo = rs.getInt("student_roll_no");
+                String rollNo = rs.getString("student_roll_no");
                 int totalClasses = rs.getInt("total_classes");
                 int presentClasses = rs.getInt("present_classes");
 
-                // Calculate percentage (cast to double to avoid integer division rounding bugs)
                 double percentage = 0.0;
                 if (totalClasses > 0) {
                     percentage = ((double) presentClasses / totalClasses) * 100.0;
@@ -175,7 +172,6 @@ public class DatabaseManager {
                 System.out.println("Roll No: " + rollNo + " | Attended: " + presentClasses + "/" + totalClasses +
                         " | Percentage: " + String.format("%.2f", percentage) + "%");
 
-                // Check 75% university rule
                 if (percentage < 75.0) {
                     System.out.println("  ⚠️ WARNING: Attendance is below 75% threshold!");
                 }
@@ -190,15 +186,15 @@ public class DatabaseManager {
         }
     }
 
-    // Insert a dummy attendance record into the logs table
-    public static void addAttendanceLog(int classId, int studentRollNo, String status, String timestamp) {
+    // Insert an attendance record into the logs table
+    public static void addAttendanceLog(int classId, String studentRollNo, String status, String timestamp) {
         String sql = "INSERT INTO attendance_logs (class_id, student_roll_no, status, timestamp) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, classId);
-            pstmt.setInt(2, studentRollNo);
+            pstmt.setString(2, studentRollNo);
             pstmt.setString(3, status);
             pstmt.setString(4, timestamp);
 

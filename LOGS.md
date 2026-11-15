@@ -262,3 +262,8 @@
 - **Learned**: Calculating temporal delta using `ChronoUnit.SECONDS.between()` to invalidate outdated cryptographic payloads.
 - **Implemented**: Updated `TokenValidator.java` to strictly reject QR tokens older than 30 seconds, preventing stale screenshot cheating.
 - **Status**: Tested and verified expiration logic via terminal logs.
+
+### Day 38 - Phase 2 Step 1: Student Authentication Database Setup
+- **Learned**: Designing persistent authentication schemas in SQLite using text-based unique roll numbers and password hashing fields.
+- **Implemented**: Upgraded `DatabaseManager.java` to initialize the secure `students` table (`roll_no`, `name`, `email`, `password_hash`), seeded a default test student (`BCA2026001`), added `authenticateStudent()` query logic, and hooked database initialization into `ClassSessionWindow.java` startup.
+- **Status**: Verified table creation and student account seeding successfully on app launch.

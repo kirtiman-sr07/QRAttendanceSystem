@@ -1,5 +1,6 @@
 package com.qrattendance.gui;
 
+import com.qrattendance.db.DatabaseManager;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -28,6 +29,9 @@ public class ClassSessionWindow extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Teacher Session Portal - QRAttendance");
+
+        //Initialize SQLite database and tables (Added here!)
+        DatabaseManager.initializeDatabase();
 
         // Boot up the embedded background web server for mobile scans on port 8080
         WebServer.startServer();
