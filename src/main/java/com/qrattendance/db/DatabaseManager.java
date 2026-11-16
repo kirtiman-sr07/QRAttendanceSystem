@@ -38,7 +38,7 @@ public class DatabaseManager {
                     ");";
             stmt.execute(classesSql);
 
-            // 3. Initialize Attendance Logs Table (Fixed bug from previous code)
+            // 3. Initialize Attendance Logs Table
             String logsSql = "CREATE TABLE IF NOT EXISTS attendance_logs (" +
                     "log_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "class_id INTEGER, " +
@@ -100,7 +100,7 @@ public class DatabaseManager {
         }
     }
 
-    // Insert a new student record into the database
+    // 1. New Phase 4-argument version (Roll No as String + Password Hash)
     public static void addStudent(String rollNo, String name, String email, String passwordHash) {
         String sql = "INSERT INTO students (roll_no, name, email, password_hash) VALUES (?, ?, ?, ?)";
 
@@ -118,6 +118,16 @@ public class DatabaseManager {
         } catch (SQLException e) {
             System.out.println("Error inserting student: " + e.getMessage());
         }
+    }
+
+    // 2. Overloaded version for StudentRegistration.java (3 arguments with String rollNo)
+    public static void addStudent(String rollNo, String name, String email) {
+        addStudent(rollNo, name, email, "password123");
+    }
+
+    // 3. Overloaded version if legacy code passes rollNo as an int
+    public static void addStudent(int rollNo, String name, String email) {
+        addStudent(String.valueOf(rollNo), name, email, "password123");
     }
 
     // Update a student's attendance status (e.g., ABSENT to ON-DUTY override)

@@ -267,3 +267,11 @@
 - **Learned**: Designing persistent authentication schemas in SQLite using text-based unique roll numbers and password hashing fields.
 - **Implemented**: Upgraded `DatabaseManager.java` to initialize the secure `students` table (`roll_no`, `name`, `email`, `password_hash`), seeded a default test student (`BCA2026001`), added `authenticateStudent()` query logic, and hooked database initialization into `ClassSessionWindow.java` startup.
 - **Status**: Verified table creation and student account seeding successfully on app launch.
+
+### Day 38 - Phase 2 & Phase 3.1: Student Authentication, Session Routing, & Dashboard
+- **Learned**: Implementing cookie-based session tracking in Javalin to manage authenticated student states, and designing redirection routing (`/login` -> `/dashboard` -> `/scan`).
+- **Implemented**: 
+  - Upgraded `DatabaseManager.java` with overloaded `addStudent` methods to maintain backward compatibility between legacy code and the new alphanumeric `roll_no` / `password_hash` schema.
+  - Added the secure `POST /login` authentication handler with SQLite query validation and secure session cookie issuance (`student_session`).
+  - Created the **Student Dashboard (`GET /dashboard`)** homepage displaying profile validation badges and navigation to the live camera scanner.
+- **Status**: Successfully verified end-to-end login flow, session tracking, and redirection to the student portal dashboard.
