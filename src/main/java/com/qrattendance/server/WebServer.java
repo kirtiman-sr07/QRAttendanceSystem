@@ -146,44 +146,122 @@ public class WebServer {
             );
         });
 
-        // 4. Handle form submissions via HTTP POST from student mobile browsers
-        app.post("/submit-attendance", ctx -> {
-            String rollNumber = ctx.formParam("rollNumber");
-            String qrToken = ctx.formParam("qrToken");
+        // 4. Live Mobile Camera Scanner (GET /scan) - Phase 3 Step 2 & 3
+        app.get("/scan", ctx -> {
+            String studentSession = ctx.cookie("student_session");
+            if (studentSession == null || studentSession.isEmpty()) {
+                ctx.redirect("/login"); // Enforce authentication
+                return;
+            }
 
+            String htmlPage = "<!DOCTYPE html>" +
+                    "<html lang='en'>" +
+                    "<head>" +
+                    "    <meta charset='UTF-8'>" +
+                    "    <meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+                    "    <title>Live QR Scanner - QRAttendance</title>" +
+                    "    <script src='https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js'></script>" +
+                    "    <style>" +
+                    "        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; box-sizing: border-box; }" +
+                    "        .card { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }" +
+                    "        h2 { color: #2c3e50; margin: 0 0 8px 0; font-size: 20px; }" +
+                    "        .badge { background: #e8f8f5; color: #1abc9c; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-bottom: 15px; }" +
+                    "        #reader { width: 100%; border-radius: 8px; overflow: hidden; border: 2px solid #3498db; margin-bottom: 15px; }" +
+                    "        #status { font-size: 13px; color: #7f8c8d; margin-bottom: 15px; font-weight: 500; }" +
+                    "        .btn-back { display: inline-block; color: #7f8c8d; text-decoration: none; font-size: 13px; margin-top: 10px; }" +
+                    "        .btn-back:hover { color: #2c3e50; }" +
+                    "    </style>" +
+                    "</head>" +
+                    "<body>" +
+                    "    <div class='card'>" +
+                    "        <h2>Scan Class QR Code</h2>" +
+                    "        <div class='badge'>Student: " + studentSession + "</div>" +
+                    "        <div id='reader'></div>" +
+                    "        <div id='status'>Requesting camera access... Point at projector screen.</div>" +
+                    "        <form id='attendanceForm' action='/submit-attendance' method='POST' style='display:none;'>" +
+                    "            <input type='hidden' id='qrToken' name='qrToken'>" +
+                    "        </form>" +
+                    "        <a href='/dashboard' class='btn-back'>← Back to Dashboard</a>" +
+                    "    </div>" +
+                    "    <script>" +
+                    "        const statusEl = document.getElementById('status');" +
+                    "        const html5QrCode = new Html5Qrcode('reader');" +
+                    "        let isSubmitting = false;" +
+                    "        function onScanSuccess(decodedText) {" +
+                    "            if (isSubmitting) return;" +
+                    "            isSubmitting = true;" +
+                    "            statusEl.style.color = '#27ae60';" +
+                    "            statusEl.innerText = 'QR Captured! Verifying token...';" +
+                    "            html5QrCode.stop().then(() => {" +
+                    "                document.getElementById('qrToken').value = decodedText;" +
+                    "                document.getElementById('attendanceForm').submit();" +
+                    "            }).catch(err => {" +
+                    "                document.getElementById('qrToken').value = decodedText;" +
+                    "                document.getElementById('attendanceForm').submit();" +
+                    "            });" +
+                    "        }" +
+                    "        html5QrCode.start(" +
+                    "            { facingMode: 'environment' }," +
+                    "            { fps: 10, qrbox: { width: 240, height: 240 } }," +
+                    "            onScanSuccess," +
+                    "            (errorMessage) => { /* ignore per-frame scan misses */ }" +
+                    "        ).then(() => {" +
+                    "            statusEl.innerText = 'Camera active. Align QR code inside the box.';" +
+                    "        }).catch(err => {" +
+                    "            statusEl.style.color = '#c0392b';" +
+                    "            statusEl.innerText = 'Camera Error: ' + err;" +
+                    "        });" +
+                    "    </script>" +
+                    "</body>" +
+                    "</html>";
+
+            ctx.html(htmlPage);
+        });
+
+        // 5. Handle Auto-Submitted QR Payload (POST /submit-attendance)
+        app.post("/submit-attendance", ctx -> {
+            String rollNumber = ctx.cookie("student_session");
+            if (rollNumber == null || rollNumber.isEmpty()) {
+                ctx.redirect("/login");
+                return;
+            }
+
+            String qrToken = ctx.formParam("qrToken");
             boolean isValid = sessionActive && TokenValidator.isValidToken(qrToken, activeSubject, activeSecretWord);
 
-            System.out.println("[ATTENDANCE ATTEMPT] Roll: " + rollNumber + " | Valid: " + isValid);
+            System.out.println("[ATTENDANCE ATTEMPT] Roll: " + rollNumber + " | Valid: " + isValid + " | Token: " + qrToken);
 
-            // Record attendance in SQLite if valid
-            if (isValid && rollNumber != null && !rollNumber.isEmpty()) {
+            if (isValid) {
                 DatabaseManager.addAttendanceLog(1, rollNumber, "PRESENT", java.time.LocalDateTime.now().toString());
             }
 
-            String heading = isValid ? "Attendance Successful!" : "Check-In Failed";
+            String heading = isValid ? "Attendance Marked!" : "Check-In Failed";
             String textColor = isValid ? "#27ae60" : "#c0392b";
-            String message = isValid ? "Successfully verified and recorded." : "Token expired, invalid, or class session inactive.";
+            String message = isValid
+                    ? "Your attendance has been securely recorded."
+                    : "Token expired (15s limit), invalid QR, or class session inactive.";
 
             String responsePage = "<!DOCTYPE html>" +
-                    "<html>" +
+                    "<html lang='en'>" +
                     "<head>" +
-                    "<title>Check-In Status</title>" +
-                    "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" +
-                    "<style>" +
-                    "body { font-family: Arial, sans-serif; background-color: #f4f6f8; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; height: 100vh; box-sizing: border-box; }" +
-                    ".card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }" +
-                    "h2 { color: " + textColor + "; margin-bottom: 10px; }" +
-                    "p { color: #2c3e50; font-size: 14px; margin: 8px 0; }" +
-                    ".highlight { background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #e9ecef; font-family: monospace; font-size: 13px; word-break: break-all; margin-top: 15px; }" +
-                    "</style>" +
+                    "    <meta charset='UTF-8'>" +
+                    "    <meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+                    "    <title>Check-In Status</title>" +
+                    "    <style>" +
+                    "        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; height: 100vh; box-sizing: border-box; }" +
+                    "        .card { background: white; padding: 28px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 380px; text-align: center; }" +
+                    "        h2 { color: " + textColor + "; margin-top: 0; }" +
+                    "        p { color: #2c3e50; font-size: 14px; margin: 8px 0; }" +
+                    "        .btn { display: block; width: 100%; padding: 12px; background-color: #3498db; color: white; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold; box-sizing: border-box; margin-top: 20px; }" +
+                    "    </style>" +
                     "</head>" +
                     "<body>" +
-                    "<div class=\"card\">" +
-                    "<h2>" + heading + "</h2>" +
-                    "<p>Roll Number: <strong>" + rollNumber + "</strong></p>" +
-                    "<p>" + message + "</p>" +
-                    "<div class=\"highlight\">Token: " + qrToken + "</div>" +
-                    "</div>" +
+                    "    <div class='card'>" +
+                    "        <h2>" + heading + "</h2>" +
+                    "        <p>Roll Number: <strong>" + rollNumber + "</strong></p>" +
+                    "        <p>" + message + "</p>" +
+                    "        <a href='/dashboard' class='btn'>Return to Dashboard</a>" +
+                    "    </div>" +
                     "</body>" +
                     "</html>";
 

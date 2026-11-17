@@ -1,6 +1,8 @@
 package com.qrattendance.gui;
 
 import com.qrattendance.db.DatabaseManager;
+import com.qrattendance.security.QRCodeGenerator;
+import com.qrattendance.server.WebServer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -8,18 +10,22 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import com.qrattendance.security.QRCodeGenerator;
-import com.qrattendance.server.WebServer;
 
 public class ClassSessionWindow extends Application {
 
@@ -30,7 +36,7 @@ public class ClassSessionWindow extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Teacher Session Portal - QRAttendance");
 
-        //Initialize SQLite database and tables (Added here!)
+        // Initialize SQLite database and tables
         DatabaseManager.initializeDatabase();
 
         // Boot up the embedded background web server for mobile scans on port 8080
@@ -43,8 +49,31 @@ public class ClassSessionWindow extends Application {
         TextField subjectField = new TextField();
         subjectField.setPromptText("Enter Subject Code (e.g., JAVA_101)");
 
-        TextField secretCodeField = new TextField();
-        secretCodeField.setPromptText("Enter Secret Code Word (e.g., coffee99)");
+        // Masked Secret Word Field + Eye Toggle
+        PasswordField secretPasswordField = new PasswordField();
+        secretPasswordField.setPromptText("Enter Secret Code Word (e.g., coffee99)");
+
+        TextField secretPlainField = new TextField();
+        secretPlainField.setPromptText("Enter Secret Code Word (e.g., coffee99)");
+        secretPlainField.setManaged(false);
+        secretPlainField.setVisible(false);
+
+        // Two-way sync so typing in either field updates the other
+        secretPasswordField.textProperty().bindBidirectional(secretPlainField.textProperty());
+
+        ToggleButton eyeToggle = new ToggleButton("👁");
+        eyeToggle.setFocusTraversable(false);
+        eyeToggle.setOnAction(e -> {
+            boolean show = eyeToggle.isSelected();
+            secretPlainField.setVisible(show);
+            secretPlainField.setManaged(show);
+            secretPasswordField.setVisible(!show);
+            secretPasswordField.setManaged(!show);
+        });
+
+        StackPane secretInputStack = new StackPane(secretPasswordField, secretPlainField);
+        HBox.setHgrow(secretInputStack, Priority.ALWAYS);
+        HBox secretRow = new HBox(6, secretInputStack, eyeToggle);
 
         Button startButton = new Button("Start Class & Auto-Refresh QR");
         Label statusLabel = new Label();
@@ -62,12 +91,17 @@ public class ClassSessionWindow extends Application {
         // 3. Event-Driven Action Handler with Unified Ticker
         startButton.setOnAction(e -> {
             String subject = subjectField.getText().trim();
-            String secretWord = secretCodeField.getText().trim();
+            String secretWord = secretPasswordField.getText().trim();
 
             if (subject.isEmpty() || secretWord.isEmpty()) {
                 statusLabel.setStyle("-fx-text-fill: red;");
                 statusLabel.setText("Error: All fields must be filled!");
                 return;
+            }
+
+            // Auto-hide secret word when projecting
+            if (eyeToggle.isSelected()) {
+                eyeToggle.fire();
             }
 
             // Register active session credentials with embedded web server for validation
@@ -109,7 +143,6 @@ public class ClassSessionWindow extends Application {
                 timeLeft--;
 
                 if (timeLeft <= 0) {
-                    // Time's up! Regenerate QR code and reset countdown
                     generateAndDisplayQR.run();
                     timeLeft = 15;
                 }
@@ -121,8 +154,8 @@ public class ClassSessionWindow extends Application {
             qrTimeline.play();
         });
 
-        // 4. Layout Container Setup (Added countdownLabel right above the QR image)
-        VBox root = new VBox(12, titleLabel, subjectField, secretCodeField, startButton, statusLabel, countdownLabel, qrImageView);
+        // 4. Layout Container Setup
+        VBox root = new VBox(12, titleLabel, subjectField, secretRow, startButton, statusLabel, countdownLabel, qrImageView);
         root.setPadding(new Insets(20));
 
         // 5. Scene and Stage Configuration
@@ -136,7 +169,6 @@ public class ClassSessionWindow extends Application {
         if (qrTimeline != null) {
             qrTimeline.stop();
         }
-        // Shut down the embedded web server cleanly on application exit
         WebServer.stopServer();
     }
 

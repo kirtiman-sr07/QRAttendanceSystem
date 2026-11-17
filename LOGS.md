@@ -275,3 +275,14 @@
   - Added the secure `POST /login` authentication handler with SQLite query validation and secure session cookie issuance (`student_session`).
   - Created the **Student Dashboard (`GET /dashboard`)** homepage displaying profile validation badges and navigation to the live camera scanner.
 - **Status**: Successfully verified end-to-end login flow, session tracking, and redirection to the student portal dashboard.
+
+### Phase 3: Live Mobile Camera QR Scanning & End-to-End Tunnel Verification
+- **Learned**:
+  - Integrating `html5-qrcode` in a mobile web view to access the device rear camera (`facingMode: "environment"`) and auto-submit decoded payloads without manual input.
+  - Why mobile browsers enforce HTTPS/secure origins for camera APIs (`getUserMedia`), and how reverse tunnels (`cloudflared`) bridge a local Javalin server (`localhost:8080`) to external mobile networks.
+  - Balancing security and network latency using a 15-second visual QR rotation paired with a 30-second server-side token acceptance window.
+- **Implemented**:
+  - Replaced manual token input on `GET /scan` with an authenticated `html5-qrcode` live camera scanner and zero-touch form auto-submission to `POST /submit-attendance`.
+  - Bound attendance logging directly to the server-side `student_session` cookie and removed raw payload exposure from the student confirmation UI.
+  - Upgraded `ClassSessionWindow.java` with a masked `PasswordField` and `👁` visibility toggle button so the teacher's secret code word stays hidden during projection.
+- **Status**: Phase 3 complete. Verified end-to-end smartphone camera scan over 4G via Cloudflare HTTPS tunnel (`Token age: 3 seconds`, `Valid: true`).
