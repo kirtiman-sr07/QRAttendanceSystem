@@ -286,3 +286,14 @@
   - Bound attendance logging directly to the server-side `student_session` cookie and removed raw payload exposure from the student confirmation UI.
   - Upgraded `ClassSessionWindow.java` with a masked `PasswordField` and `👁` visibility toggle button so the teacher's secret code word stays hidden during projection.
 - **Status**: Phase 3 complete. Verified end-to-end smartphone camera scan over 4G via Cloudflare HTTPS tunnel (`Token age: 3 seconds`, `Valid: true`).
+
+### Phase 4: Anti-Proxy Validation & Duplicate Prevention Engine
+- **Learned**:
+  - Enforcing data integrity at the database storage layer using composite `UNIQUE(class_id, student_roll_no)` constraints and unique indexes (`CREATE UNIQUE INDEX`) rather than relying solely on application-level checks.
+  - How SQLite handles index creation on pre-populated tables (requiring deduplication of legacy test rows before applying unique indexes) and how to catch `SQLITE_CONSTRAINT_UNIQUE` exceptions cleanly in JDBC.
+  - Designing dynamic session lifecycles (`Statement.RETURN_GENERATED_KEYS`) so every lecture generates an isolated `class_id` instead of hardcoding a static session.
+- **Implemented**:
+  - Upgraded `DatabaseManager.java` with `createClassSession(...)` to generate unique `class_id` entries per lecture, deduplicate legacy rows, and enforce `UNIQUE(class_id, student_roll_no)` on `attendance_logs`.
+  - Introduced `DatabaseManager.LogStatus` (`SUCCESS`, `DUPLICATE`, `ERROR`) to classify database insertion outcomes.
+  - Updated `WebServer.java` (`POST /submit-attendance`) and `ClassSessionWindow.java` to track `activeSessionId` and render a dedicated orange **"Already Checked In!"** rejection screen when duplicate scans are blocked.
+- **Status**: Phase 4 complete. Verified temporal expiration (30s window), same-session duplicate blocking (`Session ID: 7` & `8`), and automatic reset when launching a new class session.

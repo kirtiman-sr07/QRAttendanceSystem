@@ -104,8 +104,9 @@ public class ClassSessionWindow extends Application {
                 eyeToggle.fire();
             }
 
-            // Register active session credentials with embedded web server for validation
-            WebServer.setSessionCredentials(subject, secretWord);
+            // Create a unique class session in SQLite and register credentials with WebServer
+            int sessionId = DatabaseManager.createClassSession(subject, "Instructor", LocalDateTime.now().toString());
+            WebServer.setSessionCredentials(sessionId, subject, secretWord);
 
             if (qrTimeline != null) {
                 qrTimeline.stop();

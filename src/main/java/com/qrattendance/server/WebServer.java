@@ -6,12 +6,14 @@ import com.qrattendance.db.DatabaseManager;
 
 public class WebServer {
     private static Javalin app;
+    private static int activeSessionId = -1;
     private static String activeSubject = "";
     private static String activeSecretWord = "";
     private static boolean sessionActive = false;
 
     // Called by JavaFX controller when teacher starts class
-    public static void setSessionCredentials(String subject, String secretWord) {
+    public static void setSessionCredentials(int sessionId, String subject, String secretWord) {
+        activeSessionId = sessionId;
         activeSubject = subject;
         activeSecretWord = secretWord;
         sessionActive = true;
@@ -19,6 +21,7 @@ public class WebServer {
 
     public static void endSession() {
         sessionActive = false;
+        activeSessionId = -1;
         activeSubject = "";
         activeSecretWord = "";
     }
@@ -87,7 +90,7 @@ public class WebServer {
             if (isAuthenticated) {
                 // Store student session state in a secure cookie
                 ctx.cookie("student_session", rollNo);
-                ctx.redirect("/dashboard"); // Redirect to Student Homepage/Dashboard upon successful login
+                ctx.redirect("/dashboard");
             } else {
                 // Render failure message
                 ctx.html(
@@ -110,7 +113,7 @@ public class WebServer {
         app.get("/dashboard", ctx -> {
             String studentSession = ctx.cookie("student_session");
             if (studentSession == null || studentSession.isEmpty()) {
-                ctx.redirect("/login"); // Kick back to login if session cookie is missing
+                ctx.redirect("/login");
                 return;
             }
 
@@ -146,11 +149,11 @@ public class WebServer {
             );
         });
 
-        // 4. Live Mobile Camera Scanner (GET /scan) - Phase 3 Step 2 & 3
+        // 4. Live Mobile Camera Scanner (GET /scan)
         app.get("/scan", ctx -> {
             String studentSession = ctx.cookie("student_session");
             if (studentSession == null || studentSession.isEmpty()) {
-                ctx.redirect("/login"); // Enforce authentication
+                ctx.redirect("/login");
                 return;
             }
 
@@ -218,7 +221,7 @@ public class WebServer {
             ctx.html(htmlPage);
         });
 
-        // 5. Handle Auto-Submitted QR Payload (POST /submit-attendance)
+        // 5. Handle Auto-Submitted QR Payload with Duplicate Prevention (POST /submit-attendance)
         app.post("/submit-attendance", ctx -> {
             String rollNumber = ctx.cookie("student_session");
             if (rollNumber == null || rollNumber.isEmpty()) {
@@ -229,17 +232,35 @@ public class WebServer {
             String qrToken = ctx.formParam("qrToken");
             boolean isValid = sessionActive && TokenValidator.isValidToken(qrToken, activeSubject, activeSecretWord);
 
-            System.out.println("[ATTENDANCE ATTEMPT] Roll: " + rollNumber + " | Valid: " + isValid + " | Token: " + qrToken);
+            String heading;
+            String textColor;
+            String message;
 
-            if (isValid) {
-                DatabaseManager.addAttendanceLog(1, rollNumber, "PRESENT", java.time.LocalDateTime.now().toString());
+            if (!isValid) {
+                System.out.println("[ATTENDANCE REJECTED] Roll: " + rollNumber + " | Reason: Invalid or expired token");
+                heading = "Check-In Failed";
+                textColor = "#c0392b";
+                message = "QR code expired (>30s limit), invalid secret, or no active class session.";
+            } else {
+                DatabaseManager.LogStatus logResult = DatabaseManager.addAttendanceLog(
+                        activeSessionId, rollNumber, "PRESENT", java.time.LocalDateTime.now().toString()
+                );
+
+                if (logResult == DatabaseManager.LogStatus.SUCCESS) {
+                    System.out.println("[ATTENDANCE MARKED] Session: " + activeSessionId + " | Roll: " + rollNumber);
+                    heading = "Attendance Marked!";
+                    textColor = "#27ae60";
+                    message = "Your attendance has been securely recorded for " + activeSubject + ".";
+                } else if (logResult == DatabaseManager.LogStatus.DUPLICATE) {
+                    heading = "Already Checked In!";
+                    textColor = "#e67e22";
+                    message = "Duplicate scan blocked: your attendance for this class session is already recorded.";
+                } else {
+                    heading = "System Error";
+                    textColor = "#c0392b";
+                    message = "Database error while recording attendance. Please notify your instructor.";
+                }
             }
-
-            String heading = isValid ? "Attendance Marked!" : "Check-In Failed";
-            String textColor = isValid ? "#27ae60" : "#c0392b";
-            String message = isValid
-                    ? "Your attendance has been securely recorded."
-                    : "Token expired (15s limit), invalid QR, or class session inactive.";
 
             String responsePage = "<!DOCTYPE html>" +
                     "<html lang='en'>" +
@@ -251,7 +272,7 @@ public class WebServer {
                     "        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; height: 100vh; box-sizing: border-box; }" +
                     "        .card { background: white; padding: 28px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 380px; text-align: center; }" +
                     "        h2 { color: " + textColor + "; margin-top: 0; }" +
-                    "        p { color: #2c3e50; font-size: 14px; margin: 8px 0; }" +
+                    "        p { color: #2c3e50; font-size: 14px; margin: 8px 0; line-height: 1.5; }" +
                     "        .btn { display: block; width: 100%; padding: 12px; background-color: #3498db; color: white; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold; box-sizing: border-box; margin-top: 20px; }" +
                     "    </style>" +
                     "</head>" +

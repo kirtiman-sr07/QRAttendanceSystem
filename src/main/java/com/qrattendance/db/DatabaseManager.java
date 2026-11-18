@@ -2,19 +2,25 @@ package com.qrattendance.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.ResultSet;
-import java.sql.PreparedStatement;
 
 public class DatabaseManager {
     private static final String URL = "jdbc:sqlite:attendance.db";
+
+    public enum LogStatus {
+        SUCCESS,
+        DUPLICATE,
+        ERROR
+    }
 
     public static void initializeDatabase() {
         try (Connection conn = DriverManager.getConnection(URL);
              Statement stmt = conn.createStatement()) {
 
-            // 1. Updated students table with TEXT roll_no and password_hash for Phase 2 authentication
+            // 1. Students table
             String studentsSql = "CREATE TABLE IF NOT EXISTS students (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "roll_no TEXT UNIQUE NOT NULL, " +
@@ -24,12 +30,12 @@ public class DatabaseManager {
                     ");";
             stmt.execute(studentsSql);
 
-            // Seed a default test student account for login testing (Roll: BCA2026001, Pass: password123)
+            // Seed default test student (Roll: BCA2026001, Pass: password123)
             String seedStudent = "INSERT OR IGNORE INTO students (roll_no, name, email, password_hash) " +
                     "VALUES ('BCA2026001', 'Kirtiman Student', 'kirtiman@student.com', 'password123');";
             stmt.execute(seedStudent);
 
-            // 2. Initialize Classes Table
+            // 2. Classes / Sessions Table
             String classesSql = "CREATE TABLE IF NOT EXISTS classes (" +
                     "class_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "subject_name TEXT, " +
@@ -38,24 +44,58 @@ public class DatabaseManager {
                     ");";
             stmt.execute(classesSql);
 
-            // 3. Initialize Attendance Logs Table
+            // 3. Attendance Logs Table with strict UNIQUE(class_id, student_roll_no) anti-duplicate constraint
             String logsSql = "CREATE TABLE IF NOT EXISTS attendance_logs (" +
                     "log_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    "class_id INTEGER, " +
-                    "student_roll_no TEXT, " +
-                    "status TEXT, " +
-                    "timestamp TEXT" +
+                    "class_id INTEGER NOT NULL, " +
+                    "student_roll_no TEXT NOT NULL, " +
+                    "status TEXT NOT NULL, " +
+                    "timestamp TEXT NOT NULL, " +
+                    "UNIQUE(class_id, student_roll_no)" +
                     ");";
             stmt.execute(logsSql);
 
-            System.out.println("[DB] Database and all core tables initialized successfully!");
+            // Clean up any pre-existing duplicate rows from earlier test runs before locking the unique index
+            stmt.execute("DELETE FROM attendance_logs WHERE log_id NOT IN (" +
+                    "SELECT MIN(log_id) FROM attendance_logs GROUP BY class_id, student_roll_no);");
+
+            // Enforce unique index on (class_id, student_roll_no)
+            stmt.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_session_student " +
+                    "ON attendance_logs(class_id, student_roll_no);");
+
+            System.out.println("[DB] Database and all core tables initialized with anti-duplicate constraints!");
 
         } catch (SQLException e) {
             System.out.println("[DB ERROR] Error initializing database: " + e.getMessage());
         }
     }
 
-    // Authenticate student login credentials for Phase 2
+    // Create a new class session row and return its generated class_id
+    public static int createClassSession(String subjectName, String teacherName, String dateTime) {
+        String sql = "INSERT INTO classes (subject_name, teacher_name, date_time) VALUES (?, ?, ?)";
+
+        try (Connection conn = DriverManager.getConnection(URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            pstmt.setString(1, subjectName);
+            pstmt.setString(2, teacherName);
+            pstmt.setString(3, dateTime);
+            pstmt.executeUpdate();
+
+            try (ResultSet keys = pstmt.getGeneratedKeys()) {
+                if (keys.next()) {
+                    int sessionId = keys.getInt(1);
+                    System.out.println("[DB] Created new class session ID: " + sessionId + " (" + subjectName + ")");
+                    return sessionId;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("[DB ERROR] Failed to create class session: " + e.getMessage());
+        }
+        return 1;
+    }
+
+    // Authenticate student login credentials
     public static boolean authenticateStudent(String rollNo, String password) {
         String sql = "SELECT * FROM students WHERE roll_no = ? AND password_hash = ?";
 
@@ -66,7 +106,6 @@ public class DatabaseManager {
             pstmt.setString(2, password.trim());
 
             try (ResultSet rs = pstmt.executeQuery()) {
-                // If a matching row is found, login is valid!
                 return rs.next();
             }
 
@@ -76,7 +115,6 @@ public class DatabaseManager {
         }
     }
 
-    // Fetch and print all students from the database
     public static void getAllStudents() {
         String sql = "SELECT * FROM students";
 
@@ -85,22 +123,17 @@ public class DatabaseManager {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             System.out.println("\n--- DATABASE RECORDS: STUDENTS TABLE ---");
-
             while (rs.next()) {
-                int id = rs.getInt("id");
-                String rollNo = rs.getString("roll_no");
-                String name = rs.getString("name");
-                String email = rs.getString("email");
-
-                System.out.println("ID: " + id + " | Roll No: " + rollNo + " | Name: " + name + " | Email: " + email);
+                System.out.println("ID: " + rs.getInt("id") +
+                        " | Roll No: " + rs.getString("roll_no") +
+                        " | Name: " + rs.getString("name") +
+                        " | Email: " + rs.getString("email"));
             }
-
         } catch (SQLException e) {
             System.out.println("Error querying database: " + e.getMessage());
         }
     }
 
-    // 1. New Phase 4-argument version (Roll No as String + Password Hash)
     public static void addStudent(String rollNo, String name, String email, String passwordHash) {
         String sql = "INSERT INTO students (roll_no, name, email, password_hash) VALUES (?, ?, ?, ?)";
 
@@ -120,17 +153,14 @@ public class DatabaseManager {
         }
     }
 
-    // 2. Overloaded version for StudentRegistration.java (3 arguments with String rollNo)
     public static void addStudent(String rollNo, String name, String email) {
         addStudent(rollNo, name, email, "password123");
     }
 
-    // 3. Overloaded version if legacy code passes rollNo as an int
     public static void addStudent(int rollNo, String name, String email) {
         addStudent(String.valueOf(rollNo), name, email, "password123");
     }
 
-    // Update a student's attendance status (e.g., ABSENT to ON-DUTY override)
     public static void updateAttendanceStatus(String rollNo, int classId, String newStatus) {
         String sql = "UPDATE attendance_logs SET status = ? WHERE student_roll_no = ? AND class_id = ?";
 
@@ -142,19 +172,16 @@ public class DatabaseManager {
             pstmt.setInt(3, classId);
 
             int rowsAffected = pstmt.executeUpdate();
-
             if (rowsAffected > 0) {
                 System.out.println("Successfully updated Roll No " + rollNo + " for Class ID " + classId + " to " + newStatus);
             } else {
                 System.out.println("No matching attendance record found to update.");
             }
-
         } catch (SQLException e) {
             System.out.println("Error updating attendance status: " + e.getMessage());
         }
     }
 
-    // Calculate attendance percentages and check against the 75% threshold
     public static void checkAttendancePercentages() {
         String sql = "SELECT student_roll_no, " +
                 "COUNT(*) AS total_classes, " +
@@ -166,38 +193,30 @@ public class DatabaseManager {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             System.out.println("\n--- ATTENDANCE PERCENTAGE REPORT ---");
-
             boolean hasRecords = false;
             while (rs.next()) {
                 hasRecords = true;
                 String rollNo = rs.getString("student_roll_no");
                 int totalClasses = rs.getInt("total_classes");
                 int presentClasses = rs.getInt("present_classes");
-
-                double percentage = 0.0;
-                if (totalClasses > 0) {
-                    percentage = ((double) presentClasses / totalClasses) * 100.0;
-                }
+                double percentage = totalClasses > 0 ? ((double) presentClasses / totalClasses) * 100.0 : 0.0;
 
                 System.out.println("Roll No: " + rollNo + " | Attended: " + presentClasses + "/" + totalClasses +
                         " | Percentage: " + String.format("%.2f", percentage) + "%");
-
                 if (percentage < 75.0) {
                     System.out.println("  ⚠️ WARNING: Attendance is below 75% threshold!");
                 }
             }
-
             if (!hasRecords) {
                 System.out.println("No attendance logs found in database yet.");
             }
-
         } catch (SQLException e) {
             System.out.println("Error calculating attendance: " + e.getMessage());
         }
     }
 
-    // Insert an attendance record into the logs table
-    public static void addAttendanceLog(int classId, String studentRollNo, String status, String timestamp) {
+    // Insert an attendance record and strictly catch UNIQUE constraint violations (double-dipping)
+    public static LogStatus addAttendanceLog(int classId, String studentRollNo, String status, String timestamp) {
         String sql = "INSERT INTO attendance_logs (class_id, student_roll_no, status, timestamp) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(URL);
@@ -209,9 +228,15 @@ public class DatabaseManager {
             pstmt.setString(4, timestamp);
 
             pstmt.executeUpdate();
+            return LogStatus.SUCCESS;
 
         } catch (SQLException e) {
-            System.out.println("Error inserting attendance log: " + e.getMessage());
+            if (e.getMessage() != null && e.getMessage().contains("SQLITE_CONSTRAINT_UNIQUE")) {
+                System.out.println("[SECURITY] Blocked duplicate check-in for Roll: " + studentRollNo + " in Session ID: " + classId);
+                return LogStatus.DUPLICATE;
+            }
+            System.out.println("[DB ERROR] Error inserting attendance log: " + e.getMessage());
+            return LogStatus.ERROR;
         }
     }
 }
