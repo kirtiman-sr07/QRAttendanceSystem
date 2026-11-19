@@ -1,5 +1,6 @@
 package com.qrattendance.gui;
 
+import com.qrattendance.analytics.ClassAnalyticsAssistant;
 import com.qrattendance.db.DatabaseManager;
 import com.qrattendance.security.QRCodeGenerator;
 import com.qrattendance.server.WebServer;
@@ -11,6 +12,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
@@ -42,7 +45,7 @@ public class ClassSessionWindow extends Application {
         // Boot up the embedded background web server for mobile scans on port 8080
         WebServer.startServer();
 
-        // 1. UI Controls Setup
+        // 1. Session Controls Setup
         Label titleLabel = new Label("Launch Live Class Session");
         titleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
@@ -84,11 +87,51 @@ public class ClassSessionWindow extends Application {
 
         // 2. ImageView Setup
         ImageView qrImageView = new ImageView();
-        qrImageView.setFitWidth(200);
-        qrImageView.setFitHeight(200);
+        qrImageView.setFitWidth(180);
+        qrImageView.setFitHeight(180);
         qrImageView.setPreserveRatio(true);
 
-        // 3. Event-Driven Action Handler with Unified Ticker
+        // 3. Smart Class Analytics (AI Assistant) Setup
+        Label aiLabel = new Label("Smart Class Analytics Assistant");
+        aiLabel.setStyle("-fx-font-size: 15px; -fx-font-weight: bold;");
+
+        TextField queryField = new TextField();
+        queryField.setPromptText("Ask e.g. 'Which students have below 75% attendance?'");
+        HBox.setHgrow(queryField, Priority.ALWAYS);
+
+        Button askButton = new Button("Ask AI");
+
+        TextArea aiOutputArea = new TextArea();
+        aiOutputArea.setEditable(false);
+        aiOutputArea.setWrapText(true);
+        aiOutputArea.setPrefRowCount(6);
+        aiOutputArea.setPromptText("Analytics insights from SQLite will appear here...");
+
+        Button defaultersBtn = new Button("Below 75%");
+        Button turnoutBtn = new Button("Today's Turnout");
+
+        Runnable runAnalyticsQuery = () -> {
+            String result = ClassAnalyticsAssistant.answerQuery(queryField.getText());
+            aiOutputArea.setText(result);
+        };
+
+        askButton.setOnAction(e -> runAnalyticsQuery.run());
+        queryField.setOnAction(e -> runAnalyticsQuery.run());
+
+        defaultersBtn.setOnAction(e -> {
+            queryField.setText("Which students have below 75% attendance?");
+            runAnalyticsQuery.run();
+        });
+
+        turnoutBtn.setOnAction(e -> {
+            queryField.setText("Summarize today's attendance turnout");
+            runAnalyticsQuery.run();
+        });
+
+        HBox queryRow = new HBox(6, queryField, askButton);
+        HBox quickPromptRow = new HBox(6, defaultersBtn, turnoutBtn);
+
+        // 4. Event-Driven Action Handler with Unified Ticker
         startButton.setOnAction(e -> {
             String subject = subjectField.getText().trim();
             String secretWord = secretPasswordField.getText().trim();
@@ -155,12 +198,26 @@ public class ClassSessionWindow extends Application {
             qrTimeline.play();
         });
 
-        // 4. Layout Container Setup
-        VBox root = new VBox(12, titleLabel, subjectField, secretRow, startButton, statusLabel, countdownLabel, qrImageView);
-        root.setPadding(new Insets(20));
+        // 5. Layout Container Setup
+        VBox root = new VBox(
+                10,
+                titleLabel,
+                subjectField,
+                secretRow,
+                startButton,
+                statusLabel,
+                countdownLabel,
+                qrImageView,
+                new Separator(),
+                aiLabel,
+                queryRow,
+                quickPromptRow,
+                aiOutputArea
+        );
+        root.setPadding(new Insets(18));
 
-        // 5. Scene and Stage Configuration
-        Scene scene = new Scene(root, 380, 530);
+        // 6. Scene and Stage Configuration
+        Scene scene = new Scene(root, 500, 720);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

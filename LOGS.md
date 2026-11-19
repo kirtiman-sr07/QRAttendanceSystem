@@ -297,3 +297,12 @@
   - Introduced `DatabaseManager.LogStatus` (`SUCCESS`, `DUPLICATE`, `ERROR`) to classify database insertion outcomes.
   - Updated `WebServer.java` (`POST /submit-attendance`) and `ClassSessionWindow.java` to track `activeSessionId` and render a dedicated orange **"Already Checked In!"** rejection screen when duplicate scans are blocked.
 - **Status**: Phase 4 complete. Verified temporal expiration (30s window), same-session duplicate blocking (`Session ID: 7` & `8`), and automatic reset when launching a new class session.
+
+### Phase 5: Teacher AI Feature / Smart Class Analytics Assistant
+- **Learned**:
+  - Translating natural-language teacher queries (attendance shortages, turnout summaries, and student roll-number lookups) into parameterized and aggregated SQLite SQL queries.
+  - Designing reliable, offline-first analytics inside a JavaFX desktop portal so live demos and classroom queries run instantaneously without external API dependencies.
+- **Implemented**:
+  - Created `ClassAnalyticsAssistant.java` (`com.qrattendance.analytics`) to query `students`, `classes`, and `attendance_logs` in `attendance.db` and return formatted reports for threshold shortages (default `<75%`), session/daily turnout, and individual student records.
+  - Added the **Smart Class Analytics Assistant** panel to `ClassSessionWindow.java` with query input, Enter-key and button triggers, quick-prompt buttons (`Below 75%`, `Today's Turnout`), and a read-only output `TextArea`.
+- **Status**: Phase 5 complete. Verified threshold check, turnout summary, and student roll-number lookup in the live JavaFX portal.
