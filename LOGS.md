@@ -306,3 +306,14 @@
   - Created `ClassAnalyticsAssistant.java` (`com.qrattendance.analytics`) to query `students`, `classes`, and `attendance_logs` in `attendance.db` and return formatted reports for threshold shortages (default `<75%`), session/daily turnout, and individual student records.
   - Added the **Smart Class Analytics Assistant** panel to `ClassSessionWindow.java` with query input, Enter-key and button triggers, quick-prompt buttons (`Below 75%`, `Today's Turnout`), and a read-only output `TextArea`.
 - **Status**: Phase 5 complete. Verified threshold check, turnout summary, and student roll-number lookup in the live JavaFX portal.
+
+### Phase 6: HOD / Admin Panel & Attendance Overrides
+- **Learned**:
+  - Wrapping multi-table state changes (`UPDATE`/`INSERT` on `attendance_logs` plus `INSERT` into `attendance_audit_log`) in a single JDBC transaction (`setAutoCommit(false)` / `commit()`) so status overrides and audit records stay consistent.
+  - Building filterable JavaFX `TableView` interfaces backed by parameterized SQLite queries (`LIKE` filters on date and subject) with mandatory reason tracking for administrative accountability.
+- **Implemented**:
+  - Added the `attendance_audit_log` schema and `DatabaseManager.overrideAttendanceStatus(...)` transaction method in `DatabaseManager.java`.
+  - Created `HodAdminWindow.java` with HOD authentication, date/subject filtering, row click-to-fill override controls (`ON-DUTY`, `PRESENT`, `ABSENT`), mandatory reason validation, and a live **Audit Trail History** tab.
+  - Added an **HOD / Admin Portal** launcher button to `ClassSessionWindow.java`.
+- **Status**: Phase 6 complete. Verified HOD login, subject/date filtering, manual status override, and persistent audit log entry.
+

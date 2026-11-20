@@ -79,6 +79,10 @@ public class ClassSessionWindow extends Application {
         HBox secretRow = new HBox(6, secretInputStack, eyeToggle);
 
         Button startButton = new Button("Start Class & Auto-Refresh QR");
+        Button hodAdminButton = new Button("HOD / Admin Portal");
+        hodAdminButton.setOnAction(e -> HodAdminWindow.openLoginWindow());
+        HBox actionRow = new HBox(8, startButton, hodAdminButton);
+
         Label statusLabel = new Label();
 
         // Visual Countdown Label Setup
@@ -204,7 +208,7 @@ public class ClassSessionWindow extends Application {
                 titleLabel,
                 subjectField,
                 secretRow,
-                startButton,
+                actionRow,
                 statusLabel,
                 countdownLabel,
                 qrImageView,

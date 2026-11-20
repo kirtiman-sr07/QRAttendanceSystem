@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 
 public class DatabaseManager {
     private static final String URL = "jdbc:sqlite:attendance.db";
@@ -63,7 +64,20 @@ public class DatabaseManager {
             stmt.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_session_student " +
                     "ON attendance_logs(class_id, student_roll_no);");
 
-            System.out.println("[DB] Database and all core tables initialized with anti-duplicate constraints!");
+            // 4. Attendance Audit Log Table for HOD / Admin manual overrides
+            String auditSql = "CREATE TABLE IF NOT EXISTS attendance_audit_log (" +
+                    "audit_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "class_id INTEGER NOT NULL, " +
+                    "student_roll_no TEXT NOT NULL, " +
+                    "old_status TEXT NOT NULL, " +
+                    "new_status TEXT NOT NULL, " +
+                    "changed_by TEXT NOT NULL, " +
+                    "reason TEXT NOT NULL, " +
+                    "changed_at TEXT NOT NULL" +
+                    ");";
+            stmt.execute(auditSql);
+
+            System.out.println("[DB] Database and all core tables (including audit log) initialized!");
 
         } catch (SQLException e) {
             System.out.println("[DB ERROR] Error initializing database: " + e.getMessage());
@@ -179,6 +193,88 @@ public class DatabaseManager {
             }
         } catch (SQLException e) {
             System.out.println("Error updating attendance status: " + e.getMessage());
+        }
+    }
+
+    // HOD / Admin override that updates attendance_logs (or inserts if missing for a session) and records an audit entry
+    public static boolean overrideAttendanceStatus(
+            int classId,
+            String studentRollNo,
+            String newStatus,
+            String changedBy,
+            String reason
+    ) {
+        if (studentRollNo == null || studentRollNo.trim().isEmpty()
+                || newStatus == null || newStatus.trim().isEmpty()
+                || reason == null || reason.trim().isEmpty()) {
+            return false;
+        }
+
+        String cleanRoll = studentRollNo.trim();
+        String cleanStatus = newStatus.trim().toUpperCase();
+        String cleanActor = (changedBy == null || changedBy.trim().isEmpty()) ? "HOD_ADMIN" : changedBy.trim();
+        String cleanReason = reason.trim();
+        String nowStr = LocalDateTime.now().toString();
+
+        String selectSql = "SELECT status FROM attendance_logs WHERE class_id = ? AND student_roll_no = ?";
+        String updateSql = "UPDATE attendance_logs SET status = ? WHERE class_id = ? AND student_roll_no = ?";
+        String insertLogSql = "INSERT INTO attendance_logs (class_id, student_roll_no, status, timestamp) VALUES (?, ?, ?, ?)";
+        String auditSql = "INSERT INTO attendance_audit_log " +
+                "(class_id, student_roll_no, old_status, new_status, changed_by, reason, changed_at) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = DriverManager.getConnection(URL)) {
+            conn.setAutoCommit(false);
+
+            String oldStatus = "ABSENT";
+            boolean rowExists = false;
+
+            try (PreparedStatement selStmt = conn.prepareStatement(selectSql)) {
+                selStmt.setInt(1, classId);
+                selStmt.setString(2, cleanRoll);
+                try (ResultSet rs = selStmt.executeQuery()) {
+                    if (rs.next()) {
+                        rowExists = true;
+                        oldStatus = rs.getString("status");
+                    }
+                }
+            }
+
+            if (rowExists) {
+                try (PreparedStatement updStmt = conn.prepareStatement(updateSql)) {
+                    updStmt.setString(1, cleanStatus);
+                    updStmt.setInt(2, classId);
+                    updStmt.setString(3, cleanRoll);
+                    updStmt.executeUpdate();
+                }
+            } else {
+                try (PreparedStatement insStmt = conn.prepareStatement(insertLogSql)) {
+                    insStmt.setInt(1, classId);
+                    insStmt.setString(2, cleanRoll);
+                    insStmt.setString(3, cleanStatus);
+                    insStmt.setString(4, nowStr);
+                    insStmt.executeUpdate();
+                }
+            }
+
+            try (PreparedStatement audStmt = conn.prepareStatement(auditSql)) {
+                audStmt.setInt(1, classId);
+                audStmt.setString(2, cleanRoll);
+                audStmt.setString(3, oldStatus);
+                audStmt.setString(4, cleanStatus);
+                audStmt.setString(5, cleanActor);
+                audStmt.setString(6, cleanReason);
+                audStmt.setString(7, nowStr);
+                audStmt.executeUpdate();
+            }
+
+            conn.commit();
+            System.out.println("[AUDIT] Session " + classId + " | Roll " + cleanRoll + ": " + oldStatus + " -> " + cleanStatus + " by " + cleanActor);
+            return true;
+
+        } catch (SQLException e) {
+            System.out.println("[DB ERROR] Override transaction failed: " + e.getMessage());
+            return false;
         }
     }
 
