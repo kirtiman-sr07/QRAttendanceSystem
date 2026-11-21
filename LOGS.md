@@ -317,3 +317,11 @@
   - Added an **HOD / Admin Portal** launcher button to `ClassSessionWindow.java`.
 - **Status**: Phase 6 complete. Verified HOD login, subject/date filtering, manual status override, and persistent audit log entry.
 
+### Session Checkpoint: HOD Override & Audit Trail Verification
+- **What Changed**:
+  - Verified HOD sign-in and multi-column attendance log viewing across sessions in `HodAdminWindow.java`.
+  - Tested filtering attendance records by date (`2026-11-18`) and subject (`JAVA_101`), plus resetting filters cleanly.
+  - Executed a live manual override on `BCA2026001` for Session `6` (`PRESENT` -> `ABSENT`, reason: `"Absent"`) via `DatabaseManager.overrideAttendanceStatus(...)` and confirmed the persisted record in the **Audit Trail History** tab.
+- **Takeaway**:
+  - Clicking a table row to auto-fill `Session ID` and `Roll No` speeds up manual corrections, while requiring a non-empty reason keeps every override traceable in SQLite.
+
