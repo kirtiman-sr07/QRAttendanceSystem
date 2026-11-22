@@ -325,3 +325,10 @@
 - **Takeaway**:
   - Clicking a table row to auto-fill `Session ID` and `Roll No` speeds up manual corrections, while requiring a non-empty reason keeps every override traceable in SQLite.
 
+### Session Checkpoint: CSS Styling & UI Polish Pass (Nov 22, 2026)
+- **What Changed**:
+  - Created `src/main/resources/styles/app.css` and wired a card-based JavaFX layout (`ScrollPane`, top bar, session card, and analytics card) in `ClassSessionWindow.java`[cite: 11, 14, 15, 16].
+  - Tested live session startup (`Session #10`, subject `java`), 15-second refresh countdown, **Copy Student URL**, **Ask AI** quick actions, and **HOD / Admin** login flow[cite: 14, 15, 16, 18].
+- **Issues Spotted for Next Pass**:
+  - Clicking **Copy Student URL** overwrote the active session status message (`Session #10 active...`) instead of keeping both visible[cite: 14, 15, 16].
+  - Raw session numbering (`#10`) needs clearer daily/period context, HOD login shows a plain hint, and user/credential creation (teachers/students) plus a GitHub-square style student home page are still needed.
