@@ -125,13 +125,16 @@ public class ClassSessionWindow extends Application {
         Label statusLabel = new Label("Ready to launch a new session.");
         statusLabel.getStyleClass().add("muted-label");
 
+        Label urlNoticeLabel = new Label("Student Web Portal: http://localhost:8080/login");
+        urlNoticeLabel.getStyleClass().add("muted-label");
+
         studentUrlBtn.setOnAction(e -> {
             String url = "http://localhost:8080/login";
             ClipboardContent content = new ClipboardContent();
             content.putString(url);
             Clipboard.getSystemClipboard().setContent(content);
-            statusLabel.setStyle("-fx-text-fill: #059669; -fx-font-weight: bold;");
-            statusLabel.setText("Copied " + url + " (use your cloudflared HTTPS link on mobile)");
+            urlNoticeLabel.setStyle("-fx-text-fill: #059669; -fx-font-weight: bold;");
+            urlNoticeLabel.setText("Copied " + url + " (use your cloudflared HTTPS link on mobile)");
         });
 
         ImageView qrImageView = new ImageView();
@@ -143,7 +146,17 @@ public class ClassSessionWindow extends Application {
         qrFrame.setAlignment(Pos.CENTER);
         qrFrame.getStyleClass().add("qr-frame");
 
-        VBox sessionCard = new VBox(12, sessionTitle, sessionHint, subjectField, secretRow, sessionActionRow, statusLabel, qrFrame);
+        VBox sessionCard = new VBox(
+                12,
+                sessionTitle,
+                sessionHint,
+                subjectField,
+                secretRow,
+                sessionActionRow,
+                statusLabel,
+                urlNoticeLabel,
+                qrFrame
+        );
         sessionCard.getStyleClass().add("card");
 
         // --- Card 2: Smart Class Analytics Assistant ---

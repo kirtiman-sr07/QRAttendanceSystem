@@ -332,3 +332,7 @@
 - **Issues Spotted for Next Pass**:
   - Clicking **Copy Student URL** overwrote the active session status message (`Session #10 active...`) instead of keeping both visible[cite: 14, 15, 16].
   - Raw session numbering (`#10`) needs clearer daily/period context, HOD login shows a plain hint, and user/credential creation (teachers/students) plus a GitHub-square style student home page are still needed.
+
+### Session Checkpoint: Non-Destructive Student URL Copy (Nov 23, 2026)
+- **What Changed**:
+  - Added a dedicated `urlNoticeLabel` in `ClassSessionWindow.java` so clicking **Copy Student URL** copies `http://localhost:8080/login` without overwriting the active class session status banner.
