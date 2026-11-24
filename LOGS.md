@@ -336,3 +336,9 @@
 ### Session Checkpoint: Non-Destructive Student URL Copy (Nov 23, 2026)
 - **What Changed**:
   - Added a dedicated `urlNoticeLabel` in `ClassSessionWindow.java` so clicking **Copy Student URL** copies `http://localhost:8080/login` without overwriting the active class session status banner.
+
+### Session Checkpoint: Role Launcher Flow & Back Navigation Note (Nov 24, 2026)
+- **What Changed**:
+  - Designed `RoleLauncherWindow.java` as a single entry screen offering **Teacher Session Portal**, **HOD / Admin Portal**, and **Student Web Portal (Copy Link)** with shared `app.css` styling.
+- **Note for Next Pass**:
+  - Add a **Back** button / step-back action on sub-views so users can return to the previous screen instead of relying on closing windows or manual clicks by mistake.
