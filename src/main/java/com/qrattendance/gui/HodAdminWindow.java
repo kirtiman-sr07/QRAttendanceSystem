@@ -40,15 +40,26 @@ public class HodAdminWindow {
     public static class AttendanceRow {
         private final SimpleIntegerProperty logId;
         private final SimpleIntegerProperty classId;
+        private final SimpleStringProperty sessionDay;
         private final SimpleStringProperty subject;
         private final SimpleStringProperty rollNo;
         private final SimpleStringProperty studentName;
         private final SimpleStringProperty status;
         private final SimpleStringProperty timestamp;
 
-        public AttendanceRow(int logId, int classId, String subject, String rollNo, String studentName, String status, String timestamp) {
+        public AttendanceRow(
+                int logId,
+                int classId,
+                String sessionDay,
+                String subject,
+                String rollNo,
+                String studentName,
+                String status,
+                String timestamp
+        ) {
             this.logId = new SimpleIntegerProperty(logId);
             this.classId = new SimpleIntegerProperty(classId);
+            this.sessionDay = new SimpleStringProperty(sessionDay);
             this.subject = new SimpleStringProperty(subject);
             this.rollNo = new SimpleStringProperty(rollNo);
             this.studentName = new SimpleStringProperty(studentName);
@@ -58,6 +69,7 @@ public class HodAdminWindow {
 
         public int getLogId() { return logId.get(); }
         public int getClassId() { return classId.get(); }
+        public String getSessionDay() { return sessionDay.get(); }
         public String getSubject() { return subject.get(); }
         public String getRollNo() { return rollNo.get(); }
         public String getStudentName() { return studentName.get(); }
@@ -165,8 +177,11 @@ public class HodAdminWindow {
         TableColumn<AttendanceRow, Number> colLogId = new TableColumn<>("Log ID");
         colLogId.setCellValueFactory(c -> c.getValue().logId);
 
-        TableColumn<AttendanceRow, Number> colSession = new TableColumn<>("Session");
-        colSession.setCellValueFactory(c -> c.getValue().classId);
+        TableColumn<AttendanceRow, String> colSession = new TableColumn<>("Date / Session");
+        colSession.setCellValueFactory(c -> new SimpleStringProperty(
+                (c.getValue().getSessionDay().isEmpty() ? "N/A" : c.getValue().getSessionDay())
+                        + " • #" + c.getValue().getClassId()
+        ));
 
         TableColumn<AttendanceRow, String> colSubject = new TableColumn<>("Subject");
         colSubject.setCellValueFactory(c -> c.getValue().subject);
@@ -316,7 +331,8 @@ public class HodAdminWindow {
     private static List<AttendanceRow> fetchAttendanceRows(String dateFilter, String subjectFilter) {
         List<AttendanceRow> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
-                "SELECT a.log_id, a.class_id, COALESCE(c.subject_name, 'N/A') AS subject_name, " +
+                "SELECT a.log_id, a.class_id, COALESCE(substr(c.date_time, 1, 10), '') AS session_day, " +
+                        "COALESCE(c.subject_name, 'N/A') AS subject_name, " +
                         "a.student_roll_no, COALESCE(s.name, 'Unknown') AS student_name, a.status, a.timestamp " +
                         "FROM attendance_logs a " +
                         "LEFT JOIN classes c ON a.class_id = c.class_id " +
@@ -347,6 +363,7 @@ public class HodAdminWindow {
                     list.add(new AttendanceRow(
                             rs.getInt("log_id"),
                             rs.getInt("class_id"),
+                            rs.getString("session_day"),
                             rs.getString("subject_name"),
                             rs.getString("student_roll_no"),
                             rs.getString("student_name"),

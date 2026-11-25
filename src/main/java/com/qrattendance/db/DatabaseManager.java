@@ -109,6 +109,23 @@ public class DatabaseManager {
         return 1;
     }
 
+    // Count how many class sessions have been created on a given date (yyyy-MM-dd)
+    public static int getDailySessionNumber(String datePrefix) {
+        String sql = "SELECT COUNT(*) FROM classes WHERE date_time LIKE ?";
+        try (Connection conn = DriverManager.getConnection(URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, datePrefix + "%");
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return Math.max(1, rs.getInt(1));
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("[DB ERROR] Failed to count daily sessions: " + e.getMessage());
+        }
+        return 1;
+    }
+
     // Authenticate student login credentials
     public static boolean authenticateStudent(String rollNo, String password) {
         String sql = "SELECT * FROM students WHERE roll_no = ? AND password_hash = ?";

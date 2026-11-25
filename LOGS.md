@@ -342,3 +342,10 @@
   - Designed `RoleLauncherWindow.java` as a single entry screen offering **Teacher Session Portal**, **HOD / Admin Portal**, and **Student Web Portal (Copy Link)** with shared `app.css` styling.
 - **Note for Next Pass**:
   - Add a **Back** button / step-back action on sub-views so users can return to the previous screen instead of relying on closing windows or manual clicks by mistake.
+
+### Session Checkpoint: Smarter Session & Period Labeling (Nov 25, 2026)
+- **What Changed**:
+  - Added `DatabaseManager.getDailySessionNumber(String datePrefix)` in `DatabaseManager.java` to count class sessions created on a given date (`yyyy-MM-dd`) via `date_time`.
+  - Updated `ClassSessionWindow.java` so active session status banners display `yyyy-MM-dd • Period #N (Session #ID • SUBJECT)` instead of a bare running session number.
+  - Updated `HodAdminWindow.java` (`AttendanceRow`, `fetchAttendanceRows`, and the `TableView`) with a **Date / Session** column (`yyyy-MM-dd • #ID`) while preserving exact numeric `classId` selection for overrides.
+- **Status**: Priority 2 complete; ready to move on to Priority 3 (HOD login cleanup & teacher/student credential manager).

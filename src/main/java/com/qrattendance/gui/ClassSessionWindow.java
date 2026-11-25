@@ -48,6 +48,9 @@ public class ClassSessionWindow extends Application {
         WebServer.startServer();
 
         // --- Top Role & Portal Bar ---
+        Button backBtn = new Button("← Back");
+        backBtn.getStyleClass().add("btn-secondary");
+
         Label brandTitle = new Label("QRAttendance");
         brandTitle.getStyleClass().add("app-title");
 
@@ -66,7 +69,7 @@ public class ClassSessionWindow extends Application {
         Region topSpacer = new Region();
         HBox.setHgrow(topSpacer, Priority.ALWAYS);
 
-        HBox topBar = new HBox(10, brandBox, topSpacer, studentUrlBtn, hodAdminButton);
+        HBox topBar = new HBox(12, backBtn, brandBox, topSpacer, studentUrlBtn, hodAdminButton);
         topBar.setAlignment(Pos.CENTER_LEFT);
         topBar.getStyleClass().add("topbar");
 
@@ -124,6 +127,20 @@ public class ClassSessionWindow extends Application {
 
         Label statusLabel = new Label("Ready to launch a new session.");
         statusLabel.getStyleClass().add("muted-label");
+
+        backBtn.setOnAction(e -> {
+            if (qrTimeline != null) {
+                qrTimeline.stop();
+            }
+            try {
+                Stage launcherStage = new Stage();
+                new RoleLauncherWindow().start(launcherStage);
+                primaryStage.close();
+            } catch (Exception ex) {
+                statusLabel.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold;");
+                statusLabel.setText("Could not return to role selector: " + ex.getMessage());
+            }
+        });
 
         Label urlNoticeLabel = new Label("Student Web Portal: http://localhost:8080/login");
         urlNoticeLabel.getStyleClass().add("muted-label");
@@ -233,7 +250,9 @@ public class ClassSessionWindow extends Application {
                 eyeToggle.fire();
             }
 
-            int sessionId = DatabaseManager.createClassSession(subject, "Instructor", LocalDateTime.now().toString());
+            final int sessionId = DatabaseManager.createClassSession(subject, "Instructor", LocalDateTime.now().toString());
+            final String todayDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            final int dailyPeriod = DatabaseManager.getDailySessionNumber(todayDate);
             WebServer.setSessionCredentials(sessionId, subject, secretWord);
 
             if (qrTimeline != null) {
@@ -250,7 +269,7 @@ public class ClassSessionWindow extends Application {
                 try (FileInputStream fileInputStream = new FileInputStream(outputPath)) {
                     qrImageView.setImage(new Image(fileInputStream));
                     statusLabel.setStyle("-fx-text-fill: #059669; -fx-font-weight: bold;");
-                    statusLabel.setText("Session #" + sessionId + " active (" + subject + ") • Refreshed at " + timestamp);
+                    statusLabel.setText(todayDate + " • Period #" + dailyPeriod + " (Session #" + sessionId + " • " + subject + ") • Refreshed " + timestamp.substring(11));
                 } catch (IOException ex) {
                     statusLabel.setStyle("-fx-text-fill: #dc2626; -fx-font-weight: bold;");
                     statusLabel.setText("Error loading QR image: " + ex.getMessage());
