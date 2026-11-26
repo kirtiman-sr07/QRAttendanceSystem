@@ -36,6 +36,21 @@ public class DatabaseManager {
                     "VALUES ('BCA2026001', 'Kirtiman Student', 'kirtiman@student.com', 'password123');";
             stmt.execute(seedStudent);
 
+            // 1B. Teachers table
+            String teachersSql = "CREATE TABLE IF NOT EXISTS teachers (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "teacher_id TEXT UNIQUE NOT NULL, " +
+                    "name TEXT NOT NULL, " +
+                    "department TEXT NOT NULL, " +
+                    "password_hash TEXT NOT NULL" +
+                    ");";
+            stmt.execute(teachersSql);
+
+            // Seed default faculty account (ID: TCH001, Pass: teach123)
+            String seedTeacher = "INSERT OR IGNORE INTO teachers (teacher_id, name, department, password_hash) " +
+                    "VALUES ('TCH001', 'Faculty Instructor', 'Computer Applications', 'teach123');";
+            stmt.execute(seedTeacher);
+
             // 2. Classes / Sessions Table
             String classesSql = "CREATE TABLE IF NOT EXISTS classes (" +
                     "class_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -77,7 +92,7 @@ public class DatabaseManager {
                     ");";
             stmt.execute(auditSql);
 
-            System.out.println("[DB] Database and all core tables (including audit log) initialized!");
+            System.out.println("[DB] Database and all core tables (including teachers and audit log) initialized!");
 
         } catch (SQLException e) {
             System.out.println("[DB ERROR] Error initializing database: " + e.getMessage());
@@ -144,6 +159,55 @@ public class DatabaseManager {
             System.out.println("[DB ERROR] Authentication query failed: " + e.getMessage());
             return false;
         }
+    }
+
+    public static boolean registerStudent(String rollNo, String name, String email, String password) {
+        String sql = "INSERT INTO students (roll_no, name, email, password_hash) VALUES (?, ?, ?, ?)";
+        try (Connection conn = DriverManager.getConnection(URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, rollNo.trim().toUpperCase());
+            pstmt.setString(2, name.trim());
+            pstmt.setString(3, email.trim());
+            pstmt.setString(4, password.trim());
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("[DB ERROR] Failed to register student: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean registerTeacher(String teacherId, String name, String department, String password) {
+        String sql = "INSERT INTO teachers (teacher_id, name, department, password_hash) VALUES (?, ?, ?, ?)";
+        try (Connection conn = DriverManager.getConnection(URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, teacherId.trim().toUpperCase());
+            pstmt.setString(2, name.trim());
+            pstmt.setString(3, department.trim());
+            pstmt.setString(4, password.trim());
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("[DB ERROR] Failed to register teacher: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static String authenticateTeacher(String teacherId, String password) {
+        String sql = "SELECT name FROM teachers WHERE teacher_id = ? AND password_hash = ?";
+        try (Connection conn = DriverManager.getConnection(URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, teacherId.trim().toUpperCase());
+            pstmt.setString(2, password.trim());
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("name");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("[DB ERROR] Teacher authentication failed: " + e.getMessage());
+        }
+        return null;
     }
 
     public static void getAllStudents() {

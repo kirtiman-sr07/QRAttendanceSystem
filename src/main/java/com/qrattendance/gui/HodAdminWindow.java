@@ -109,17 +109,19 @@ public class HodAdminWindow {
     }
 
     public static void openLoginWindow() {
+        DatabaseManager.initializeDatabase();
+
         Stage stage = new Stage();
         stage.setTitle("HOD / Admin Portal Login");
 
         Label heading = new Label("HOD / Administrative Login");
         heading.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
-        Label hint = new Label("Demo Credentials: hod / admin123");
-        hint.setStyle("-fx-font-size: 12px; -fx-text-fill: #7f8c8d;");
+        Label hint = new Label("Authorized Department Administration Only");
+        hint.setStyle("-fx-font-size: 12px; -fx-text-fill: #64748b;");
 
         TextField userField = new TextField();
-        userField.setPromptText("Admin Username (e.g., hod)");
+        userField.setPromptText("Admin Username");
 
         PasswordField passField = new PasswordField();
         passField.setPromptText("Admin Password");
@@ -136,7 +138,7 @@ public class HodAdminWindow {
             if (HOD_USER.equalsIgnoreCase(u) && HOD_PASS.equals(p)) {
                 showDashboard(stage, u.toUpperCase());
             } else {
-                errorLabel.setText("Invalid HOD credentials. Try hod / admin123.");
+                errorLabel.setText("Authentication failed. Invalid username or password.");
             }
         };
 
@@ -263,6 +265,126 @@ public class HodAdminWindow {
 
         auditTable.getColumns().addAll(aIdCol, aSessCol, aRollCol, aOldCol, aNewCol, aByCol, aReasonCol, aTimeCol);
 
+        // --- Tab 3: Manage Users & Credentials ---
+        Label addStudentTitle = new Label("Add Student Account");
+        addStudentTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
+        TextField stdRollField = new TextField();
+        stdRollField.setPromptText("Roll No (e.g., BCA2026002)");
+
+        TextField stdNameField = new TextField();
+        stdNameField.setPromptText("Student Full Name");
+
+        TextField stdEmailField = new TextField();
+        stdEmailField.setPromptText("Student Email");
+
+        PasswordField stdPassField = new PasswordField();
+        stdPassField.setPromptText("Initial Password");
+
+        Button addStudentBtn = new Button("Create Student");
+        Label stdStatusLabel = new Label();
+
+        addStudentBtn.setOnAction(e -> {
+            String r = stdRollField.getText().trim();
+            String n = stdNameField.getText().trim();
+            String em = stdEmailField.getText().trim();
+            String pw = stdPassField.getText().trim();
+
+            if (r.isEmpty() || n.isEmpty() || em.isEmpty() || pw.isEmpty()) {
+                stdStatusLabel.setStyle("-fx-text-fill: #c0392b;");
+                stdStatusLabel.setText("All student fields (Roll No, Name, Email, Password) are required.");
+                return;
+            }
+
+            boolean created = DatabaseManager.registerStudent(r, n, em, pw);
+            if (created) {
+                stdStatusLabel.setStyle("-fx-text-fill: #27ae60;");
+                stdStatusLabel.setText("Student created: " + r.toUpperCase() + " (" + n + ")");
+                stdRollField.clear();
+                stdNameField.clear();
+                stdEmailField.clear();
+                stdPassField.clear();
+            } else {
+                stdStatusLabel.setStyle("-fx-text-fill: #c0392b;");
+                stdStatusLabel.setText("Could not create student (Roll No may already exist).");
+            }
+        });
+
+        VBox addStudentBox = new VBox(
+                10,
+                addStudentTitle,
+                stdRollField,
+                stdNameField,
+                stdEmailField,
+                stdPassField,
+                addStudentBtn,
+                stdStatusLabel
+        );
+        addStudentBox.setPadding(new Insets(12));
+        addStudentBox.setStyle("-fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-background-color: #ffffff;");
+        HBox.setHgrow(addStudentBox, Priority.ALWAYS);
+
+        Label addTeacherTitle = new Label("Add Teacher Account");
+        addTeacherTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
+        TextField tchIdField = new TextField();
+        tchIdField.setPromptText("Teacher ID (e.g., TCH002)");
+
+        TextField tchNameField = new TextField();
+        tchNameField.setPromptText("Teacher Full Name");
+
+        TextField tchDeptField = new TextField();
+        tchDeptField.setPromptText("Department (e.g., Computer Applications)");
+
+        PasswordField tchPassField = new PasswordField();
+        tchPassField.setPromptText("Initial Password");
+
+        Button addTeacherBtn = new Button("Create Teacher");
+        Label tchStatusLabel = new Label();
+
+        addTeacherBtn.setOnAction(e -> {
+            String tid = tchIdField.getText().trim();
+            String tname = tchNameField.getText().trim();
+            String dept = tchDeptField.getText().trim();
+            String tpw = tchPassField.getText().trim();
+
+            if (tid.isEmpty() || tname.isEmpty() || dept.isEmpty() || tpw.isEmpty()) {
+                tchStatusLabel.setStyle("-fx-text-fill: #c0392b;");
+                tchStatusLabel.setText("All teacher fields (ID, Name, Department, Password) are required.");
+                return;
+            }
+
+            boolean created = DatabaseManager.registerTeacher(tid, tname, dept, tpw);
+            if (created) {
+                tchStatusLabel.setStyle("-fx-text-fill: #27ae60;");
+                tchStatusLabel.setText("Teacher created: " + tid.toUpperCase() + " (" + tname + ")");
+                tchIdField.clear();
+                tchNameField.clear();
+                tchDeptField.clear();
+                tchPassField.clear();
+            } else {
+                tchStatusLabel.setStyle("-fx-text-fill: #c0392b;");
+                tchStatusLabel.setText("Could not create teacher (Teacher ID may already exist).");
+            }
+        });
+
+        VBox addTeacherBox = new VBox(
+                10,
+                addTeacherTitle,
+                tchIdField,
+                tchNameField,
+                tchDeptField,
+                tchPassField,
+                addTeacherBtn,
+                tchStatusLabel
+        );
+        addTeacherBox.setPadding(new Insets(12));
+        addTeacherBox.setStyle("-fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-background-color: #ffffff;");
+        HBox.setHgrow(addTeacherBox, Priority.ALWAYS);
+
+        HBox usersRow = new HBox(16, addStudentBox, addTeacherBox);
+        usersRow.setPadding(new Insets(14));
+
         // --- Loaders ---
         Runnable refreshTables = () -> {
             attendanceData.setAll(fetchAttendanceRows(dateFilterField.getText(), subjectFilterField.getText()));
@@ -322,7 +444,10 @@ public class HodAdminWindow {
         Tab auditTab = new Tab("Audit Trail History", auditPane);
         auditTab.setClosable(false);
 
-        TabPane tabPane = new TabPane(logsTab, auditTab);
+        Tab usersTab = new Tab("Manage Users & Credentials", usersRow);
+        usersTab.setClosable(false);
+
+        TabPane tabPane = new TabPane(logsTab, auditTab, usersTab);
 
         stage.setScene(new Scene(tabPane, 920, 560));
         stage.centerOnScreen();

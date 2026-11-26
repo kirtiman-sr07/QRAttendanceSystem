@@ -349,3 +349,10 @@
   - Updated `ClassSessionWindow.java` so active session status banners display `yyyy-MM-dd • Period #N (Session #ID • SUBJECT)` instead of a bare running session number.
   - Updated `HodAdminWindow.java` (`AttendanceRow`, `fetchAttendanceRows`, and the `TableView`) with a **Date / Session** column (`yyyy-MM-dd • #ID`) while preserving exact numeric `classId` selection for overrides.
 - **Status**: Priority 2 complete; ready to move on to Priority 3 (HOD login cleanup & teacher/student credential manager).
+
+### Session Checkpoint: Clean HOD Login & User/Credential Manager (Nov 26, 2026)
+- **What Changed**:
+  - Added the `teachers` table (with default seeded `TCH001`) plus `registerStudent(...)`, `registerTeacher(...)`, and `authenticateTeacher(...)` in `DatabaseManager.java`.
+  - Cleaned up `HodAdminWindow.openLoginWindow()` to remove exposed login credential hints and added the **Manage Users & Credentials** tab for creating student and teacher accounts directly from the HOD dashboard.
+- **Next Session**:
+  - Add a live directory view of registered students/teachers in the HOD tab and connect teacher login authentication before starting Priority 4.
