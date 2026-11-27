@@ -356,3 +356,10 @@
   - Cleaned up `HodAdminWindow.openLoginWindow()` to remove exposed login credential hints and added the **Manage Users & Credentials** tab for creating student and teacher accounts directly from the HOD dashboard.
 - **Next Session**:
   - Add a live directory view of registered students/teachers in the HOD tab and connect teacher login authentication before starting Priority 4.
+
+### Session Checkpoint: Official-Grade Analytics & Action Triggers (Nov 27, 2026)
+- **What Changed**:
+  - Updated `ClassAnalyticsAssistant.java` to produce privacy-aware official summaries (aggregate turnout, eligibility compliance, masked roll numbers in shortage reports, and subject-wise breakdown) while still supporting explicit roll-number lookups when queried directly.
+  - Updated `ClassSessionWindow.java` action chips to **Today's Turnout**, **Eligibility Summary**, **Below 75%**, and **Subject Breakdown**.
+- **Next Session**:
+  - Start Priority 5: Student Home Page with a GitHub-style attendance square grid and student insights/AI prompts.

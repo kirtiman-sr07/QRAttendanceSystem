@@ -180,11 +180,11 @@ public class ClassSessionWindow extends Application {
         Label aiTitle = new Label("Smart Class Analytics Assistant");
         aiTitle.getStyleClass().add("section-title");
 
-        Label aiHint = new Label("Query live attendance percentages, defaulters, session turnout, or roll numbers.");
+        Label aiHint = new Label("Official privacy-safe summaries for turnout, eligibility standing, shortage alerts, and courses.");
         aiHint.getStyleClass().add("muted-label");
 
         TextField queryField = new TextField();
-        queryField.setPromptText("Ask e.g. 'Which students have below 75% attendance?'");
+        queryField.setPromptText("Ask e.g. 'Eligibility compliance summary' or 'Summarize today's turnout'");
         queryField.getStyleClass().add("text-field");
         HBox.setHgrow(queryField, Priority.ALWAYS);
 
@@ -194,16 +194,19 @@ public class ClassSessionWindow extends Application {
         HBox queryRow = new HBox(8, queryField, askButton);
         queryRow.setAlignment(Pos.CENTER_LEFT);
 
-        Button defaultersBtn = new Button("Below 75%");
-        defaultersBtn.getStyleClass().add("btn-chip");
-
         Button turnoutBtn = new Button("Today's Turnout");
         turnoutBtn.getStyleClass().add("btn-chip");
 
-        Button studentSampleBtn = new Button("Student: BCA2026001");
-        studentSampleBtn.getStyleClass().add("btn-chip");
+        Button eligibilityBtn = new Button("Eligibility Summary");
+        eligibilityBtn.getStyleClass().add("btn-chip");
 
-        HBox quickPromptRow = new HBox(8, defaultersBtn, turnoutBtn, studentSampleBtn);
+        Button defaultersBtn = new Button("Below 75%");
+        defaultersBtn.getStyleClass().add("btn-chip");
+
+        Button subjectBtn = new Button("Subject Breakdown");
+        subjectBtn.getStyleClass().add("btn-chip");
+
+        HBox quickPromptRow = new HBox(8, turnoutBtn, eligibilityBtn, defaultersBtn, subjectBtn);
         quickPromptRow.setAlignment(Pos.CENTER_LEFT);
 
         TextArea aiOutputArea = new TextArea();
@@ -217,18 +220,23 @@ public class ClassSessionWindow extends Application {
         askButton.setOnAction(e -> runAnalyticsQuery.run());
         queryField.setOnAction(e -> runAnalyticsQuery.run());
 
-        defaultersBtn.setOnAction(e -> {
-            queryField.setText("Which students have below 75% attendance?");
-            runAnalyticsQuery.run();
-        });
-
         turnoutBtn.setOnAction(e -> {
             queryField.setText("Summarize today's attendance turnout");
             runAnalyticsQuery.run();
         });
 
-        studentSampleBtn.setOnAction(e -> {
-            queryField.setText("BCA2026001");
+        eligibilityBtn.setOnAction(e -> {
+            queryField.setText("Eligibility compliance summary");
+            runAnalyticsQuery.run();
+        });
+
+        defaultersBtn.setOnAction(e -> {
+            queryField.setText("Which students have below 75% attendance?");
+            runAnalyticsQuery.run();
+        });
+
+        subjectBtn.setOnAction(e -> {
+            queryField.setText("Subject breakdown");
             runAnalyticsQuery.run();
         });
 
